@@ -251,7 +251,6 @@ function viewHome(){
   $('#app').innerHTML = `
   <section class="hero">
     <h1>생각은 자유롭게,<br>협업은 유기적으로.</h1>
-    <p class="sub">팀플 아이디어를 각자 먼저 쓰고, 함께 고르고, 역할과 일정까지 정하는 곳이에요. 앱 설치나 가입 없이 링크로 들어와요.</p>
   </section>
   ${(ls.get('link.recent')||[]).length?`<section class="card"><h3>이 기기에서 참여한 프로젝트</h3>${(ls.get('link.recent')||[]).map(x=>`<div class="row sp" style="padding:8px 0;border-top:1px solid #EEF1F0"><span class="grow"><b>${esc(x.name)}</b> <span class="sm sub">${esc(x.code)}</span></span><a href="?r=${esc(x.code)}${x.local?'&local=1':''}"><button>열기</button></a></div>`).join('')}</section>`:''}
   <form class="card" id="fNew" novalidate>
@@ -260,7 +259,6 @@ function viewHome(){
     <label for="nTopic">주제</label><input id="nTopic" required placeholder="예: 대학생 팀플 무임승차를 줄이는 서비스 기획" autocomplete="off">
     <label id="tl">프로젝트 유형</label>
     <div class="choice" role="radiogroup" aria-labelledby="tl">${Object.entries(TYPES).map(([k,t],i)=>`<button type="button" role="radio" aria-checked="${i===2}" aria-pressed="${i===2}" data-type="${k}"><b>${t.name}</b><br><span class="xs sub">${t.crit.join(', ')}</span></button>`).join('')}</div>
-    <p class="help">유형에 따라 질문, 평가 기준, 실행 계획이 달라져요.</p>
     <div class="grid2">
       <div><label for="nDue">최종 마감일</label><input id="nDue" type="date" value="${addDays(today(),14)}"></div>
       <div><label for="nPer">1인 아이디어 카드 수</label><select id="nPer">${[2,3,4,5].map(n=>`<option ${n===3?'selected':''}>${n}</option>`).join('')}</select></div>
@@ -273,7 +271,6 @@ function viewHome(){
   </form>
   <section class="card">
     <h3>시뮬레이션으로 둘러보기</h3>
-    <p class="sub sm">같은 주제를 두 팀 구성으로 비교해 보세요. 팀원 3명이 이미 카드를 낸 상태에서, 내가 진행자로 시작해요.</p>
     <div class="grid2" style="margin-top:8px"><button id="dSame">동일 전공 팀 (경영 4명)</button><button id="dMixed">융합 전공 팀 (4개 전공)</button></div>
   </section>
   ${LOCAL&&!Remote?'<p class="foot">서버 설정이 없어 이 브라우저 안에서만 저장돼요.</p>':''}`;
@@ -300,11 +297,9 @@ function viewJoin(){
     <form class="card" id="f1" novalidate>
       <h2 style="margin-top:0">나를 소개해 주세요 <span class="xs sub">1/2</span></h2>
       ${members().length?`<details class="sm" style="margin:-4px 0 6px"><summary style="cursor:pointer;color:var(--pri);font-weight:600;padding:6px 0">이미 참여했어요 (다른 기기에서 이어하기)</summary>
-        <p class="help">내 이름을 누르고, 한 번 더 눌러 확인하면 이 기기에서 이어서 쓸 수 있어요.</p>
         <div class="opt" style="margin-top:6px">${members().map(([u,m])=>`<button type="button" data-claim="${u}">${esc(m.name)}</button>`).join('')}</div></details>`:''}
       <label for="oName">이름</label><input id="oName" value="${esc(o.name||'')}" autocomplete="name" required>
       <label for="oMajor">전공</label><input id="oMajor" value="${esc(o.major||'')}" placeholder="예: 경영학과" required>
-      <p class="help">팀원들의 전공으로 '동일 전공 팀'인지 '융합 전공 팀'인지 판단해 AI 질문을 맞춰요.</p>
       <label for="oSkill">자신 있는 것이나 경험</label><input id="oSkill" value="${esc(o.skills||'')}" placeholder="예: PPT, 자료조사, 영상편집">
       <label>맡고 싶은 역할 <span class="xs sub">(여러 개 선택)</span></label>
       <div class="opt">${T.roles.map(([n])=>`<button type="button" data-want="${esc(n)}" aria-pressed="${o.wants.includes(n)}">${esc(n)}</button>`).join('')}</div>
@@ -313,12 +308,12 @@ function viewJoin(){
       ls.set('link.uid.'+CODE,u); location.reload(); });
     on('[data-want]','click',e=>{ const n=e.currentTarget.dataset.want; o.wants=o.wants.includes(n)?o.wants.filter(x=>x!==n):[...o.wants,n]; e.currentTarget.setAttribute('aria-pressed',o.wants.includes(n)); saveUi(); });
     ['oName','oMajor','oSkill'].forEach(id=>$('#'+id).oninput=e=>{ o[{oName:'name',oMajor:'major',oSkill:'skills'}[id]]=e.target.value; saveUi(); });
-    bar(`<span class="msg">협업 성향 질문 5개가 이어져요 (30초)</span><button class="pri" id="n1">다음</button>`);
+    bar(`<span class="msg"></span><button class="pri" id="n1">다음</button>`);
     $('#n1').onclick = ()=>{ if(!o.name?.trim()||!o.major?.trim()){ toast('이름과 전공을 적어 주세요'); (o.name?.trim()?$('#oMajor'):$('#oName')).focus(); return; } o.step=2; saveUi(); render(true); };
   } else {
     const q=ui.quiz;
     $('#app').innerHTML = `
-    <h1>어떻게 협업할 때 편한가요?</h1><p class="sub">정답은 없어요. 역할 추천에만 쓰여요. <span class="xs">2/2</span></p>
+    <h1>어떻게 협업할 때 편한가요? <span class="xs sub">2/2</span></h1>
     ${QUIZ.map(([a,b],i)=>`<div class="card"><h3>Q${i+1}. 둘 중 더 편한 쪽은?</h3><div class="choice" role="radiogroup" aria-label="질문 ${i+1}">
       <button type="button" role="radio" data-q="${i}" data-v="0" aria-pressed="${q[i]===0}" aria-checked="${q[i]===0}">${a}</button>
       <button type="button" role="radio" data-q="${i}" data-v="1" aria-pressed="${q[i]===1}" aria-checked="${q[i]===1}">${b}</button></div></div>`).join('')}`;
@@ -336,19 +331,17 @@ function viewJoin(){
 /* ---------- 팀 구성 (로비) ---------- */
 function teamBox(){ const c=AI.comp(R);
   return `<div class="card"><div class="row sp"><h3>팀원 ${members().length}명</h3><span class="chip ${c.kind==='same'?'w':'p'}">${c.kind==='same'?'동일 전공 팀':'융합 전공 팀'}</span></div>
-  <div class="who-list" style="margin-top:8px">${members().map(([u,m])=>`<div class="m">${av(u)}<div><b>${esc(m.name)}</b>${u===R.hostId?' <span class="xs sub">(진행자)</span>':''}<div class="xs sub">${esc(m.major)}, ${esc(m.trait)}</div></div></div>`).join('')}</div>
-  <p class="help" style="margin-top:10px">${c.kind==='same'?'같은 전공이라 생각이 비슷하게 모이기 쉬워요. AI가 다른 전공의 관점과 반대 사례를 물어요.':'전공이 달라 용어와 관점이 엇갈리기 쉬워요. AI가 전공 사이의 접점을 찾는 질문을 해요.'}</p></div>`; }
+  <div class="who-list" style="margin-top:8px">${members().map(([u,m])=>`<div class="m">${av(u)}<div><b>${esc(m.name)}</b>${u===R.hostId?' <span class="xs sub">(진행자)</span>':''}<div class="xs sub">${esc(m.major)}, ${esc(m.trait)}</div></div></div>`).join('')}</div></div>`; }
 function viewLobby(){
   const link = location.origin+location.pathname+`?r=${CODE}${LOCAL&&Remote?'&local=1':''}`;
   $('#app').innerHTML = `
   <h1>${esc(R.name)}</h1><p class="sub">${esc(R.topic)}</p>
-  <div class="card"><h3>팀원 초대</h3><p class="sub sm">링크를 팀 카톡방에 올리면, 팀원은 로그인 없이 바로 참여해요.</p>
+  <div class="card"><h3>팀원 초대</h3>
     <div class="row sp" style="margin:10px 0"><span class="code" aria-label="초대 코드">${CODE}</span><button id="cp">초대 링크 복사</button></div>
     ${navigator.share?'<button class="ghost" id="sh">공유하기…</button>':''}</div>
-  ${teamBox()}
-  <div class="card sm"><h3>진행 순서</h3><ol class="sub" style="margin:6px 0 0;padding-left:18px"><li>LINK IN: 각자 아이디어 ${R.per}장 쓰기. 다른 사람 내용은 안 보여요</li><li>LINK SYNC: 다수 의견, 소수 의견, 둘을 이은 융합 의견</li><li>LINK MATCH: 전공과 성향으로 역할 추천</li><li>LINK UP: 업무, 마감, 진행 상태</li></ol></div>`;
+  ${teamBox()}`;
   $('#cp').onclick=()=>copy(link); $('#sh')&&($('#sh').onclick=()=>navigator.share({title:'LINK 초대',text:`${R.name} 팀 프로젝트에 참여해 주세요`,url:link}).catch(()=>{}));
-  bar(isHost()?`<span class="msg">${members().length<2?'팀원이 2명 이상이면 시작할 수 있어요':'모두 들어왔다면 시작하세요'}</span><button class="pri" id="go" ${members().length<2?'disabled':''}>LINK IN 시작</button>`:`<span class="msg">진행자가 시작하면 자동으로 넘어가요</span>`);
+  bar(isHost()?`<span class="msg">${members().length<2?'팀원이 2명 이상이면 시작할 수 있어요':''}</span><button class="pri" id="go" ${members().length<2?'disabled':''}>LINK IN 시작</button>`:`<span class="msg">진행자가 시작하면 자동으로 넘어가요</span>`);
   $('#go')&&($('#go').onclick=()=>up({phase:'in',phaseAt:Date.now()}));
 }
 
@@ -358,7 +351,6 @@ function viewIn(){
   const cnt=u=>all.filter(c=>c.by===u).length, readyN=members().filter(([u])=>cnt(u)>=per).length;
   $('#app').innerHTML = `
   <h1>${esc(R.topic)}</h1>
-  <p class="sub">다른 팀원의 아이디어와 작성자는 SYNC 전까지 보이지 않아요. 완성된 답이 아니어도 괜찮아요.</p>
   <div class="card"><div class="row sp"><b>팀 진행 현황</b><span class="sm sub">카드 ${all.length}/${per*members().length}장, 다 쓴 사람 ${readyN}/${members().length}명</span></div>
     <div class="gauge" style="margin:8px 0" role="progressbar" aria-valuemin="0" aria-valuemax="${per*members().length}" aria-valuenow="${all.length}"><i style="width:${Math.min(100,all.length/(per*members().length||1)*100)}%"></i></div>
     <div class="who-list">${members().map(([u,m])=>`<span class="chip ${cnt(u)>=per?'ok':''}">${esc(m.name)} ${Math.min(cnt(u),per)}/${per}</span>`).join('')}</div></div>
@@ -370,7 +362,7 @@ function viewIn(){
     ${mine.map(([id,c])=>`<div class="idea row sp"><div class="grow"><div class="t">${esc(c.text)}</div>${c.why?`<div class="w">${esc(c.why)}</div>`:''}</div><button type="button" class="ghost" data-del="${id}" aria-label="카드 삭제">삭제</button></div>`).join('')}
   </form>
   <section class="card ai" aria-label="AI 힌트">
-    <div class="who">막힐 때 볼 질문</div><p class="xs sub" style="margin:0 0 6px">${esc(h.tag)}에 맞춘 질문이에요. 답은 직접 써 주세요.</p>
+    <div class="who">막힐 때 볼 질문</div>
     <p style="font-weight:600">${esc(h.q)}</p>
     <button type="button" class="ghost" id="nh">다른 질문 보기</button>
   </section>
@@ -378,7 +370,7 @@ function viewIn(){
     <div class="who">생각 파고들기 (5 Whys)</div>
     ${ui.chain.map((s,i)=>`<div class="sm" style="margin:6px 0"><span class="sub">Q${i+1}. ${esc(s.q)}</span><br>${esc(s.a)}</div>`).join('')}
     ${ui.chain.length<5?`<form id="fw" class="row" novalidate style="margin-top:8px"><label for="wa" style="margin:0;width:100%">Q${ui.chain.length+1}. ${esc(AI.why(ui.chain))}</label><input id="wa" class="grow" autocomplete="off" placeholder="떠오르는 대로 답해 보세요"><button type="submit">답하기</button></form>`
-      :`<p class="sm" style="margin-top:8px"><b>생각의 뿌리에 닿았어요.</b> 위 답들에서 카드 한 장을 직접 써 보세요.</p>`}
+      :''}
     ${ui.chain.length?'<button type="button" class="ghost" id="wr">처음부터 다시</button>':''}
   </section>`;
   $('#ct').oninput=e=>{ui.draft=e.target.value;saveUi();}; $('#cw').oninput=e=>{ui.why=e.target.value;saveUi();};
@@ -390,7 +382,7 @@ function viewIn(){
   $('#fw')&&($('#fw').onsubmit=e=>{ e.preventDefault(); const a=$('#wa').value.trim(); if(!a) return; ui.chain.push({q:AI.why(ui.chain),a}); saveUi(); render(true); $('#wa')?.focus(); });
   $('#wr')&&($('#wr').onclick=()=>{ui.chain=[];saveUi();render(true);});
   bar(isHost()?`<span class="msg">${readyN<members().length?`${members().length-readyN}명이 아직 작성 중이에요`:'모두 작성했어요'}</span><button class="pri" id="go" ${all.length<2?'disabled':''}>${readyN<members().length?'그래도 공개':'아이디어 공개하기'}</button>`
-    :`<span class="msg">${done?'다 썼어요! 진행자가 공개하면 넘어가요':'아이디어를 '+(per-mine.length)+'장 더 써 주세요'}</span>`);
+    :`<span class="msg">${done?'다 썼어요':'아이디어를 '+(per-mine.length)+'장 더 써 주세요'}</span>`);
   $('#go')&&($('#go').onclick=e=>{ const b=e.currentTarget; if(readyN<members().length&&!b.dataset.ok){ b.dataset.ok=1; b.textContent='한 번 더 누르면 공개'; return; } up({phase:'sync',phaseAt:Date.now()}); });
 }
 
@@ -404,21 +396,20 @@ function viewSync(){
   const best=cands.slice().sort((a,b)=>tot(b[0])-tot(a[0]))[0];
   $('#app').innerHTML = `
   <h1>아이디어 ${an.cards.length}장이 공개됐어요</h1>
-  <p class="sub">작성자는 표시되지 않아요. ${T.name} 기준인 ${T.crit.join(', ')}으로 함께 살펴봐요.</p>
   ${an.kw.length?`<div class="row" aria-label="공통 키워드"><span class="sm sub">공통 키워드</span>${an.kw.map(k=>`<span class="chip p">${esc(k)}</span>`).join('')}</div>`:''}
   <div class="card ai"><div class="who">${c.kind==='same'?'동일 전공 팀':'융합 전공 팀'}이라면</div>
     ${c.kind==='same'?`아이디어 유사도가 ${Math.round(an.avg*100)}%예요. 같은 전공의 익숙한 틀에서 나왔을 수 있으니 <b>소수 의견 B를 먼저</b> 이야기해 보세요.`
       :`${c.majors.map(esc).join(', ')} 전공이 모였어요. 낯선 용어가 있는 카드는 작성자가 한 줄로 풀어 설명하고, 전공 사이의 접점을 찾아보세요.`}</div>
   <section class="card sec"><div class="row sp"><h3><span class="k">A</span>다수 의견</h3><span class="sm sub">${an.A.length}장</span></div>
     ${an.A.map(x=>`<div class="idea"><div class="t">${esc(x.text)}</div>${x.why?`<div class="w">${esc(x.why)}</div>`:''}${evid(x)}</div>`).join('')}</section>
-  <section class="card sec b"><h3><span class="k">B</span>소수 의견</h3><p class="sub sm" style="margin-top:0">적게 나왔지만 다른 방향을 보는 의견이에요.</p>
+  <section class="card sec b"><h3><span class="k">B</span>소수 의견</h3>
     ${an.B.length?an.B.map(b=>{ const r=react[b.id]||{}, y=Object.values(r).filter(v=>v==='y').length, hh=Object.values(r).filter(v=>v==='h').length;
       return `<div class="idea"><div class="t">${esc(b.text)}</div>${b.why?`<div class="w">${esc(b.why)}</div>`:''}${evid(b)}
       <div class="sm" style="margin-top:8px;color:var(--warn)"><b>생각해 볼 질문</b> ${esc(AI.counter(b,an))}</div>
       <div class="row" style="margin-top:8px"><button class="sm" data-rx="${b.id}" data-v="y" aria-pressed="${r[ME]==='y'}">반영해 보자 ${y||''}</button><button class="sm" data-rx="${b.id}" data-v="h" aria-pressed="${r[ME]==='h'}">보류 ${hh||''}</button></div></div>`; }).join(''):'<p class="sub sm">모든 아이디어가 비슷한 방향이에요.</p>'}</section>
   <section class="card sec c"><div class="row sp"><h3><span class="k">C</span>융합 의견 제안</h3>${isHost()&&cText?'<button class="ghost" id="ce">다듬기</button>':''}</div>
-    ${cText?`<div class="idea"><div class="t" id="ctx">${esc(cText)}</div></div><p class="help">A와 B를 이어 본 참고안이에요. 최종 아이디어는 팀이 정해요.</p>`:'<p class="sub sm">소수 의견이 생기면 융합 의견을 제안해요.</p>'}</section>
-  <section class="card"><h3>후보 평가</h3><p class="sub sm">각 후보가 기준을 충족하면 눌러 주세요. 내 평가만 저장돼요.</p>
+    ${cText?`<div class="idea"><div class="t" id="ctx">${esc(cText)}</div></div>`:''}</section>
+  <section class="card"><h3>후보 평가</h3>
     ${cands.map(([k,t])=>`<div class="idea"><div class="row sp"><span class="chip ${k==='A'?'p':k==='C'?'ok':'w'}">${k==='A'?'A':k==='C'?'C':'B'}</span><span class="xs sub">충족 ${tot(k)}표</span></div><div class="t" style="margin-top:6px">${esc(t)}</div>
       <div class="crit">${T.crit.map((cr,i)=>`<button data-sc="${k}" data-i="${i}" aria-pressed="${!!(score[k]?.[ME]?.[i])}">${cr}</button>`).join('')}</div>
       ${isHost()?`<button class="ghost" data-fin="${k}" style="margin-top:6px">이 안으로 최종 확정</button>`:''}</div>`).join('')}</section>
@@ -428,7 +419,7 @@ function viewSync(){
   on('[data-fin]','click',e=>{ const k=e.currentTarget.dataset.fin; up({'sync.final':{key:k,text:cands.find(x=>x[0]===k)[1]}}); toast('최종 아이디어로 확정했어요'); });
   $('#ce')&&($('#ce').onclick=()=>{ $('#ctx').outerHTML=`<label for="cin" class="sr">융합 의견</label><textarea id="cin">${esc(cText)}</textarea><div class="row" style="margin-top:6px"><button class="pri" id="cs">저장</button></div>`; $('#cin').focus(); $('#cs').onclick=()=>{ up({'sync.c':$('#cin').value.trim()}); $('#cin').blur(); }; });
   bar(isHost()?`<span class="msg">${s.final?'최종 아이디어를 정했어요':`지금 평가가 가장 높은 후보는 ${best?esc(best[0]):'-'}예요`}</span><button class="pri" id="go" ${s.final?'':'disabled'}>역할 정하기</button>`
-    :`<span class="msg">${s.final?'최종 아이디어가 확정됐어요':'후보를 평가해 주세요. 확정은 팀 논의 후 진행자가 해요'}</span>`);
+    :`<span class="msg">${s.final?'최종 아이디어가 확정됐어요':''}</span>`);
   $('#go')&&($('#go').onclick=()=>up({phase:'match',phaseAt:Date.now(),'match.assign':AI.recommend(R)}));
 }
 
@@ -439,12 +430,11 @@ function viewMatch(){
   const myRoles=T.roles.filter(r=>as[r[0]]===ME);
   $('#app').innerHTML = `
   <h1>전공, 역량, 성향을 보고 역할을 나눠 봤어요</h1>
-  <p class="sub">업무 개수가 아니라 예상 소요 시간으로 균형을 맞췄어요. 추천은 제안일 뿐, 최종 역할은 팀이 정해요.</p>
   ${myRoles.length?`<div class="card final"><p class="sm sub" style="margin:0">내 추천 역할</p><h2 style="margin:2px 0 4px">${myRoles.map(r=>esc(r[0])).join(', ')}</h2>
     <p class="sub sm">이유: ${myRoles.map(r=>AI.reason(R.members[ME],r)).join(' / ')}</p>
     <button class="${ack[ME]?'':'pri'}" id="ak">${ack[ME]?'수락했어요':'이 역할 수락하기'}</button></div>`:''}
   <div class="card"><table><thead><tr><th>역할</th><th>예상 시간</th><th>담당</th></tr></thead><tbody>
-  ${T.roles.map(r=>`<tr><td><b>${esc(r[0])}</b><div class="xs sub">${esc(r[2])} 성향과 잘 맞아요</div></td><td>${r[1]}시간</td>
+  ${T.roles.map(r=>`<tr><td><b>${esc(r[0])}</b></td><td>${r[1]}시간</td>
     <td>${isHost()?`<label class="sr" for="as${esc(r[0])}">${esc(r[0])} 담당</label><select id="as${esc(r[0])}" data-as="${esc(r[0])}">${members().map(([u,m])=>`<option value="${u}" ${as[r[0]]===u?'selected':''}>${esc(m.name)}</option>`).join('')}</select>`
       :`<div class="row">${av(as[r[0]])}${esc(mName(as[r[0]]))}</div>`}
       ${as[r[0]]?`<div class="xs sub" style="margin-top:4px">${AI.reason(R.members[as[r[0]]]||{},r)}${ack[as[r[0]]]?', 수락함':''}</div>`:''}</td></tr>`).join('')}
@@ -454,7 +444,7 @@ function viewMatch(){
   $('#ak')&&($('#ak').onclick=()=>up({[`match.ack.${ME}`]:!ack[ME]}));
   on('[data-as]','change',e=>up({[`match.assign.${e.target.dataset.as}`]:e.target.value}));
   const ackN=members().filter(([u])=>ack[u]||!T.roles.some(r=>as[r[0]]===u)).length;
-  bar(isHost()?`<button id="re">다시 추천</button><span class="msg">${ackN}/${members().length}명 수락</span><button class="pri" id="go">실행 계획 만들기</button>`:`<span class="msg">진행자가 역할을 확정하면 실행 계획이 만들어져요</span>`);
+  bar(isHost()?`<button id="re">다시 추천</button><span class="msg">${ackN}/${members().length}명 수락</span><button class="pri" id="go">실행 계획 만들기</button>`:`<span class="msg"></span>`);
   $('#re')&&($('#re').onclick=()=>up({'match.assign':AI.recommend(R),'match.ack':{}}));
   $('#go')&&($('#go').onclick=()=>up({phase:'up',phaseAt:Date.now(),tasks:AI.plan(R)}));
 }
@@ -483,7 +473,7 @@ function viewUp(){
   on('[data-st]','click',e=>{ const id=e.currentTarget.dataset.st; up({[`tasks.${id}.status`]:((R.tasks[id].status||0)+1)%3}); });
   on('[data-who]','change',e=>up({[`tasks.${e.target.dataset.who}.who`]:e.target.value}));
   $('#fa').onsubmit=e=>{ e.preventDefault(); const t=$('#na').value.trim(); if(!t) return $('#na').focus(); up({[`tasks.t${rid(6,'abcdefghijkmnpqrstuvwxyz23456789')}`]:{title:t,role:'',who:'',due:$('#nd').value,status:0,i:99}}); $('#na').value=''; $('#na').blur(); };
-  bar(`<span class="msg">${pct===100?'모든 업무를 마쳤어요':'상태를 누를 때마다 할 일, 진행 중, 완료 순으로 바뀌어요'}</span>${isHost()?'<button id="bk">아이디어 다시 보기</button>':''}`);
+  bar(`<span class="msg">${pct===100?'모든 업무를 마쳤어요':''}</span>${isHost()?'<button id="bk">아이디어 다시 보기</button>':''}`);
   $('#bk')&&($('#bk').onclick=e=>{ const b=e.currentTarget; if(!b.dataset.ok){ b.dataset.ok=1; b.textContent='한 번 더 누르면 이동'; return; } up({phase:'sync'}); });
 }
 
