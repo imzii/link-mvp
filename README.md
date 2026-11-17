@@ -26,14 +26,13 @@
    service cloud.firestore {
      match /databases/{database}/documents {
        match /rooms/{room} {
-         allow read, write: if room.size() == 6 || room.matches('D.*');
+         allow read, write: if room.size() == 6;
        }
      }
    }
    ```
 
 4. **프로젝트 설정 → 일반 → 내 앱 → 웹(</>)**으로 앱을 등록하고, 나오는 `firebaseConfig` 객체를 `index.html`의 `const FIREBASE_CONFIG = null;` 자리에 넣습니다.
-5. 배포 주소의 도메인(예: `imzii.github.io`)이 **Authentication → 설정 → 승인된 도메인**에 없으면 추가합니다.
 
 ## 알려진 한계 (다음 개편 때 다룰 것)
 
