@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
-:root{--bg:#FFFFFF;--paper:#fff;--ink:#1D2A2E;--sub:#5D6B70;--line:#D5DCDB;--pri:#1F5C4A;--pri2:#174838;--pri-soft:#E3EEEA;--b:#A86A12;--b-soft:#F6EDDD;--bad:#B3392F}
+:root{--bg:#FFFFFF;--paper:#fff;--ink:#1D2A2E;--sub:#5D6B70;--line:#D5DCDB;--pri:#1E63D6;--pri2:#174FAE;--pri-soft:#E8F0FC;--b:#A86A12;--b-soft:#F6EDDD;--bad:#B3392F}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;word-break:keep-all}
@@ -17,7 +17,6 @@ header{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid 
 .hd{max-width:760px;margin:0 auto;padding:12px 16px 8px;display:flex;align-items:baseline;gap:12px}
 .logo{font-weight:700;font-size:19px;color:var(--ink);text-decoration:none;letter-spacing:.02em}
 .hd .proj{min-width:0;flex:1;font-size:13px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#mode{font-size:12px;color:var(--sub);white-space:nowrap}
 .stepper{max-width:760px;margin:0 auto;padding:0 16px;display:grid;grid-template-columns:repeat(5,1fr)}
 .st{font-size:12px;text-align:center;padding:8px 0 9px;color:#9AA6A9;border-bottom:2px solid transparent}
 .st.done{color:var(--sub)}.st.on{color:var(--pri);font-weight:700;border-bottom-color:var(--pri)}
@@ -75,7 +74,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;p
 </style>
 </head>
 <body>
-<header><div class="hd"><a class="logo" href="./">LINK</a><div class="proj" id="proj"></div><span id="mode"></span></div><div class="stepper" id="steps" hidden></div></header>
+<header><div class="hd"><a class="logo" href="./">LINK</a><div class="proj" id="proj"></div></div><div class="stepper" id="steps" hidden></div></header>
 <main id="app" aria-live="polite"><div class="empty">불러오는 중…</div></main>
 <div class="bar" id="bar" hidden><div class="in" id="barIn"></div></div>
 <div class="toast" id="toast" role="status"></div>
@@ -103,7 +102,7 @@ const copy = async t => { try{ await navigator.clipboard.writeText(t); toast('�
 const today = () => new Date().toISOString().slice(0,10);
 const addDays = (d,n) => { const x=new Date(d+'T00:00:00'); x.setDate(x.getDate()+n); return x.toISOString().slice(0,10); };
 const md = d => { const [y,m,dd]=d.split('-'); return `${+m}/${+dd}`; };
-const COLORS = ['#3156e8','#16825d','#b86a00','#9b3dc9','#c4372f','#0f8a9d','#6b5b3e','#d1477a'];
+const COLORS = ['#1E63D6','#16825d','#b86a00','#9b3dc9','#c4372f','#0f8a9d','#6b5b3e','#d1477a'];
 const ROOM0 = (new URLSearchParams(location.search).get('r')||'').toUpperCase();
 const ME = (!FIREBASE_CONFIG && new URLSearchParams(location.search).get('as')) || ls.get('link.uid.'+ROOM0) || ls.get('link.uid') || (()=>{ const u='u'+rid(10,'abcdefghijkmnpqrstuvwxyz23456789'); ls.set('link.uid',u); return u; })();
 
@@ -227,8 +226,7 @@ const av = u => { const i=members().findIndex(([x])=>x===u); return `<span class
 const myCards = () => Object.entries(R.cards||{}).filter(([,c])=>c.by===ME);
 
 function shell(){
-  $('#mode').textContent = LOCAL ? '로컬 시연 모드' : '실시간 연결됨'; 
-  $('#mode').title = LOCAL ? '이 브라우저 안에서만 동작해요. 서버 연결은 Firebase 설정 후 가능해요.' : 'Firebase 실시간 서버에 연결되어 있어요';
+
   if(!R){ $('#steps').hidden=true; $('#proj').textContent=''; return; }
   $('#proj').textContent = `${R.name}, ${TYPES[R.type].name}`;
   const pi = PHASES.findIndex(p=>p[0]===R.phase);
@@ -278,7 +276,7 @@ function viewHome(){
     <p class="sub sm">같은 주제를 두 팀 구성으로 비교해 보세요. 팀원 3명이 이미 카드를 낸 상태에서, 내가 진행자로 시작해요.</p>
     <div class="grid2" style="margin-top:8px"><button id="dSame">동일 전공 팀 (경영 4명)</button><button id="dMixed">융합 전공 팀 (4개 전공)</button></div>
   </section>
-  <p class="foot">${LOCAL?'지금은 로컬 시연 모드예요. 서버가 연결되면 링크를 받은 팀원 누구나 실시간으로 함께 써요.':'링크를 받은 팀원 누구나 로그인 없이 실시간으로 함께 써요.'}</p>`;
+  ${LOCAL&&!Remote?'<p class="foot">서버 설정이 없어 이 브라우저 안에서만 저장돼요.</p>':''}`;
   let type='plan';
   on('[data-type]','click',e=>{ type=e.currentTarget.dataset.type; $$('[data-type]').forEach(b=>{const s=b.dataset.type===type; b.setAttribute('aria-pressed',s); b.setAttribute('aria-checked',s);}); });
   $('#fNew').onsubmit = async e => { e.preventDefault();
