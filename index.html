@@ -84,7 +84,14 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;p
 /* ================== 설정 ==================
    Firebase 콘솔 > 프로젝트 설정 > 웹 앱의 firebaseConfig를 붙여 넣으면 실시간 서버 모드로 동작합니다.
    null이면 '로컬 시연 모드'(이 브라우저 안에서만, 탭 여러 개로 시연 가능). */
-const FIREBASE_CONFIG = null;
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDL1WqTeGqQFQ234bHoBrnawrkaX6yI3kc",
+  authDomain: "link-mvp-f5275.firebaseapp.com",
+  projectId: "link-mvp-f5275",
+  storageBucket: "link-mvp-f5275.firebasestorage.app",
+  messagingSenderId: "987216590005",
+  appId: "1:987216590005:web:7f216ae61d558317cf7afc"
+};
 
 /* ================== 유틸 ================== */
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
