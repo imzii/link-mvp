@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#ffffff">
 <title>LINK — 생각은 자유롭게, 협업은 유기적으로</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
 :root{--bg:#FFFFFF;--paper:#fff;--ink:#1D2A2E;--sub:#5D6B70;--line:#D5DCDB;--pri:#1F5C4A;--pri2:#174838;--pri-soft:#E3EEEA;--b:#A86A12;--b-soft:#F6EDDD;--bad:#B3392F}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;word-break:keep-all}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;word-break:keep-all}
 a{color:var(--pri)}
 header{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--line)}
 .hd{max-width:760px;margin:0 auto;padding:12px 16px 8px;display:flex;align-items:baseline;gap:12px}
@@ -63,7 +63,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;p
 .toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,8px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:6px;font-size:14px;opacity:0;transition:opacity .15s,transform .15s;pointer-events:none;z-index:20;max-width:90vw}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 @media (prefers-reduced-motion:reduce){.toast{transition:none}}
-.code{font:700 28px/1 "IBM Plex Sans KR",sans-serif;letter-spacing:.14em}
+.code{font:700 28px/1 "Pretendard Variable",Pretendard,sans-serif;letter-spacing:.14em;font-variant-numeric:tabular-nums}
 .empty{text-align:center;padding:28px 12px;color:var(--sub)}
 .foot{font-size:12.5px;color:var(--sub);margin-top:28px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
@@ -104,7 +104,8 @@ const today = () => new Date().toISOString().slice(0,10);
 const addDays = (d,n) => { const x=new Date(d+'T00:00:00'); x.setDate(x.getDate()+n); return x.toISOString().slice(0,10); };
 const md = d => { const [y,m,dd]=d.split('-'); return `${+m}/${+dd}`; };
 const COLORS = ['#3156e8','#16825d','#b86a00','#9b3dc9','#c4372f','#0f8a9d','#6b5b3e','#d1477a'];
-const ME = (!FIREBASE_CONFIG && new URLSearchParams(location.search).get('as')) || ls.get('link.uid') || (()=>{ const u='u'+rid(10,'abcdefghijkmnpqrstuvwxyz23456789'); ls.set('link.uid',u); return u; })();
+const ROOM0 = (new URLSearchParams(location.search).get('r')||'').toUpperCase();
+const ME = (!FIREBASE_CONFIG && new URLSearchParams(location.search).get('as')) || ls.get('link.uid.'+ROOM0) || ls.get('link.uid') || (()=>{ const u='u'+rid(10,'abcdefghijkmnpqrstuvwxyz23456789'); ls.set('link.uid',u); return u; })();
 
 /* ================== 데이터 계층 (Firebase / 로컬) ================== */
 function setPath(o,p,v){ const k=p.split('.'); for(let i=0;i<k.length-1;i++) o=(o[k[i]] ??= {}); if(v===null) delete o[k.at(-1)]; else o[k.at(-1)]=v; }
@@ -254,6 +255,7 @@ function viewHome(){
     <h1>생각은 자유롭게,<br>협업은 유기적으로.</h1>
     <p class="sub">팀플 아이디어를 각자 먼저 쓰고, 함께 고르고, 역할과 일정까지 정하는 곳이에요. 앱 설치나 가입 없이 링크로 들어와요.</p>
   </section>
+  ${(ls.get('link.recent')||[]).length?`<section class="card"><h3>이 기기에서 참여한 프로젝트</h3>${(ls.get('link.recent')||[]).map(x=>`<div class="row sp" style="padding:8px 0;border-top:1px solid #EEF1F0"><span class="grow"><b>${esc(x.name)}</b> <span class="sm sub">${esc(x.code)}</span></span><a href="?r=${esc(x.code)}${x.local?'&local=1':''}"><button>열기</button></a></div>`).join('')}</section>`:''}
   <form class="card" id="fNew" novalidate>
     <h2 style="margin-top:0">새 프로젝트 만들기</h2>
     <label for="nName">프로젝트 이름</label><input id="nName" required placeholder="예: 창의적기획과문제해결 2조" autocomplete="off">
@@ -299,6 +301,9 @@ function viewJoin(){
     <h1>${esc(R.name)}</h1><p class="sub">${esc(R.topic)}</p>
     <form class="card" id="f1" novalidate>
       <h2 style="margin-top:0">나를 소개해 주세요 <span class="xs sub">1/2</span></h2>
+      ${members().length?`<details class="sm" style="margin:-4px 0 6px"><summary style="cursor:pointer;color:var(--pri);font-weight:600;padding:6px 0">이미 참여했어요 (다른 기기에서 이어하기)</summary>
+        <p class="help">내 이름을 누르고, 한 번 더 눌러 확인하면 이 기기에서 이어서 쓸 수 있어요.</p>
+        <div class="opt" style="margin-top:6px">${members().map(([u,m])=>`<button type="button" data-claim="${u}">${esc(m.name)}</button>`).join('')}</div></details>`:''}
       <label for="oName">이름</label><input id="oName" value="${esc(o.name||'')}" autocomplete="name" required>
       <label for="oMajor">전공</label><input id="oMajor" value="${esc(o.major||'')}" placeholder="예: 경영학과" required>
       <p class="help">팀원들의 전공으로 '동일 전공 팀'인지 '융합 전공 팀'인지 판단해 AI 질문을 맞춰요.</p>
@@ -306,6 +311,8 @@ function viewJoin(){
       <label>맡고 싶은 역할 <span class="xs sub">(여러 개 선택)</span></label>
       <div class="opt">${T.roles.map(([n])=>`<button type="button" data-want="${esc(n)}" aria-pressed="${o.wants.includes(n)}">${esc(n)}</button>`).join('')}</div>
     </form>`;
+    on('[data-claim]','click',e=>{ const b=e.currentTarget, u=b.dataset.claim; if(!b.dataset.ok){ $$('[data-claim]').forEach(x=>{delete x.dataset.ok; x.setAttribute('aria-pressed',false);}); b.dataset.ok=1; b.setAttribute('aria-pressed',true); b.textContent=`${R.members[u].name}(으)로 이어하기`; return; }
+      ls.set('link.uid.'+CODE,u); location.reload(); });
     on('[data-want]','click',e=>{ const n=e.currentTarget.dataset.want; o.wants=o.wants.includes(n)?o.wants.filter(x=>x!==n):[...o.wants,n]; e.currentTarget.setAttribute('aria-pressed',o.wants.includes(n)); saveUi(); });
     ['oName','oMajor','oSkill'].forEach(id=>$('#'+id).oninput=e=>{ o[{oName:'name',oMajor:'major',oSkill:'skills'}[id]]=e.target.value; saveUi(); });
     bar(`<span class="msg">협업 성향 질문 5개가 이어져요 (30초)</span><button class="pri" id="n1">다음</button>`);
@@ -500,7 +507,8 @@ async function demo(kind){
 }
 
 /* ================== 시작 ================== */
-if(CODE){ unsub=db().subscribe(CODE, d=>{ const ph=R?.phase; R=d; render(ph!==d?.phase); }); setTimeout(()=>{ if(R===null && $('#app').textContent.includes('불러오는')) render(true); },10000); }
+const remember = () => { if(!R?.members?.[ME]) return; const list=(ls.get('link.recent')||[]).filter(x=>x.code!==CODE); list.unshift({code:CODE,name:R.name,local:LOCAL&&!!Remote,at:Date.now()}); ls.set('link.recent',list.slice(0,8)); };
+if(CODE){ unsub=db().subscribe(CODE, d=>{ const ph=R?.phase; R=d; remember(); render(ph!==d?.phase); }); setTimeout(()=>{ if(R===null && $('#app').textContent.includes('불러오는')) render(true); },10000); }
 else render(true);
 </script>
 </body>
