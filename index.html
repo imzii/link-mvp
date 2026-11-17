@@ -3,573 +3,498 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1F5C4A">
 <title>LINK — 생각은 자유롭게, 협업은 유기적으로</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#f6f5f2; --card:#fff; --ink:#1d1d1f; --sub:#6b6b70; --line:#e3e1dc;
-    --accent:#2f5bea; --accent-soft:#e8eefe; --good:#1f8a5b; --warn:#c77700; --bad:#c23b3b;
-    --off:#8a8a8f; --radius:14px;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR",sans-serif}
-  header{position:sticky;top:0;z-index:5;background:rgba(246,245,242,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-  .bar{max-width:880px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-  .logo{font-weight:800;letter-spacing:.08em;font-size:18px;cursor:pointer}
-  .logo small{font-weight:500;letter-spacing:0;color:var(--sub);font-size:12px;margin-left:6px}
-  .steps{display:flex;gap:4px;margin-left:auto}
-  .step{font-size:12px;padding:4px 9px;border-radius:999px;color:var(--sub);border:1px solid var(--line);background:#fff}
-  .step.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-  .step.done{color:var(--ink)}
-  .light{font-size:12px;padding:4px 10px;border-radius:999px;display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line)}
-  .light i{width:9px;height:9px;border-radius:50%;display:inline-block}
-  main{max-width:880px;margin:0 auto;padding:20px 16px 80px}
-  h1{font-size:24px;margin:8px 0 4px}
-  h2{font-size:19px;margin:24px 0 8px}
-  h3{font-size:16px;margin:16px 0 6px}
-  p{margin:6px 0}
-  .muted{color:var(--sub)}
-  .small{font-size:13px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:12px 0}
-  .hero{padding:28px 20px}
-  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  @media (max-width:640px){.grid2{grid-template-columns:1fr}.steps{margin-left:0}}
-  label{display:block;font-size:13px;color:var(--sub);margin:10px 0 4px}
-  input[type=text],input[type=number],textarea,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff}
-  textarea{min-height:70px;resize:vertical}
-  button{font:inherit;border-radius:10px;border:1px solid var(--line);background:#fff;padding:9px 14px;cursor:pointer}
-  button:hover{border-color:#bbb}
-  button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
-  button.primary:disabled{background:#b7c4f2;border-color:#b7c4f2;cursor:not-allowed}
-  button.ghost{background:transparent;border-color:transparent;color:var(--accent);padding:6px 8px}
-  button.danger{color:var(--bad)}
-  .pill{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
-  .pill.gray{background:#efeee9;color:var(--sub)}
-  .pill.good{background:#e4f4ec;color:var(--good)}
-  .pill.warn{background:#fdf1df;color:var(--warn)}
-  .pill.bad{background:#fbe7e7;color:var(--bad)}
-  .gauge{height:12px;background:#ecebe6;border-radius:999px;overflow:hidden}
-  .gauge>div{height:100%;background:var(--accent);transition:width .4s}
-  .big{font-size:22px;font-weight:700;line-height:1.4}
-  .ai{border-left:4px solid var(--warn);background:#fffaf1}
-  .ai .who{font-size:12px;color:var(--warn);font-weight:700;margin-bottom:4px}
-  table{width:100%;border-collapse:collapse;font-size:14px}
-  th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top}
-  th{color:var(--sub);font-weight:600;font-size:12px}
-  .chk{display:inline-flex;align-items:center;justify-content:center;min-width:34px;padding:0 8px;white-space:nowrap;height:30px;border-radius:8px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:13px}
-  .chk.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-  .codebox{font-family:ui-monospace,Menlo,monospace;font-size:12px;word-break:break-all}
-  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}
-  .toast.show{opacity:.95}
-  .bucket{border:1px dashed var(--line);border-radius:12px;padding:10px 12px}
-  .bar-h{height:10px;border-radius:999px;background:var(--accent)}
-  details summary{cursor:pointer;color:var(--accent);font-size:13px}
-  .note{font-size:12px;color:var(--sub);border-top:1px solid var(--line);margin-top:12px;padding-top:8px}
-  .ideacard{border:1px solid var(--line);border-radius:12px;padding:12px;margin:8px 0;background:#fcfcfb}
-  @media print{header,.noprint{display:none!important}body{background:#fff}.card{border:none;padding:0}}
+:root{--bg:#F1F3F2;--paper:#fff;--ink:#1D2A2E;--sub:#5D6B70;--line:#D5DCDB;--pri:#1F5C4A;--pri2:#174838;--pri-soft:#E3EEEA;--b:#A86A12;--b-soft:#F6EDDD;--bad:#B3392F}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;word-break:keep-all}
+a{color:var(--pri)}
+header{position:sticky;top:0;z-index:10;background:var(--pri);color:#fff}
+.hd{max-width:760px;margin:0 auto;padding:12px 16px 8px;display:flex;align-items:baseline;gap:12px}
+.logo{font-weight:700;font-size:19px;color:#fff;text-decoration:none;letter-spacing:.02em}
+.hd .proj{min-width:0;flex:1;font-size:13px;color:rgba(255,255,255,.78);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#mode{font-size:12px;color:rgba(255,255,255,.85);white-space:nowrap}
+.stepper{max-width:760px;margin:0 auto;padding:0 16px;display:grid;grid-template-columns:repeat(5,1fr)}
+.st{font-size:12px;text-align:center;padding:8px 0 9px;color:rgba(255,255,255,.55);border-bottom:3px solid transparent}
+.st.done{color:rgba(255,255,255,.85)}.st.on{color:#fff;font-weight:700;border-bottom-color:#fff}
+main{max-width:760px;margin:0 auto;padding:22px 16px 120px}
+h1{font-size:24px;line-height:1.35;margin:0 0 6px;font-weight:700}h2{font-size:18px;margin:26px 0 8px;font-weight:700}h3{font-size:16px;margin:0 0 6px;font-weight:600}
+p{margin:6px 0}.sub{color:var(--sub)}.sm{font-size:13.5px}.xs{font-size:12px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:16px;margin:14px 0}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.sp{justify-content:space-between}.grow{flex:1;min-width:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:560px){.grid2{grid-template-columns:1fr}}
+label{display:block;font-size:13.5px;font-weight:600;margin:14px 0 6px}
+input,textarea,select{width:100%;font:inherit;padding:10px 12px;border:1px solid #BFC9C7;border-radius:6px;background:#fff;color:var(--ink);min-height:44px}
+textarea{min-height:72px;resize:vertical}
+input:focus,textarea:focus,select:focus,button:focus-visible{outline:2px solid var(--pri);outline-offset:1px}
+.help{font-size:12.5px;color:var(--sub);margin-top:4px}
+button{font:inherit;min-height:44px;padding:9px 16px;border-radius:8px;border:1px solid #BFC9C7;background:#fff;color:var(--ink);cursor:pointer;font-weight:600}
+button:hover{border-color:var(--ink)}button:disabled{opacity:.4;cursor:not-allowed}
+.pri{background:var(--pri);border-color:var(--pri);color:#fff}.pri:hover{background:var(--pri2);border-color:var(--pri2)}
+.ghost{border-color:transparent;background:transparent;color:var(--pri);padding:6px 4px;min-height:36px;text-decoration:underline;text-underline-offset:3px}
+.ghost:hover{border-color:transparent}
+.wide{width:100%}
+.chip{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:4px;background:#E7EBEA;color:var(--sub)}
+.chip.p{background:var(--pri-soft);color:var(--pri)}.chip.ok{background:var(--pri-soft);color:var(--pri)}.chip.w{background:var(--b-soft);color:var(--b)}
+.opt{display:flex;gap:8px;flex-wrap:wrap}
+.opt button{font-weight:500;min-height:40px;padding:7px 12px}
+.opt button[aria-pressed=true],.choice button[aria-pressed=true]{background:var(--pri-soft);border-color:var(--pri);color:var(--pri);font-weight:700}
+.choice{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.choice button{text-align:left;font-weight:500;padding:12px;line-height:1.45;height:100%}
+.bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);z-index:9}
+.bar .in{max-width:760px;margin:0 auto;padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px;align-items:center}
+.bar .msg{flex:1;font-size:13.5px;color:var(--sub)}
+.gauge{height:6px;border-radius:3px;background:#DCE3E1;overflow:hidden}.gauge>i{display:block;height:100%;background:var(--pri)}
+.ai{background:transparent;border:1px dashed #A9B6B3}.ai .who{font-size:13px;font-weight:700;color:var(--pri);margin-bottom:2px}
+.idea{border:1px solid var(--line);border-radius:3px;padding:11px 12px;margin:8px 0;background:#fff}
+.idea .t{font-weight:600}.idea .w{font-size:13px;color:var(--sub);margin-top:2px}
+.sec h3 .k{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:4px;background:var(--ink);color:#fff;font-size:13px;margin-right:6px}
+.sec.b h3 .k{background:var(--b)}.sec.c h3 .k{background:var(--pri)}
+.who-list{display:flex;flex-wrap:wrap;gap:6px}
+.m{display:flex;align-items:center;gap:8px;padding:6px 10px 6px 6px;border:1px solid var(--line);border-radius:6px;background:#fff;font-size:13.5px}
+.av{width:28px;height:28px;border-radius:4px;display:grid;place-items:center;font-size:12px;font-weight:700;color:#fff;flex:none}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:9px 6px;border-bottom:1px solid var(--line);vertical-align:middle}th{font-size:12.5px;color:var(--sub);font-weight:600}
+.status{min-height:32px;padding:3px 10px;font-size:12.5px;border-radius:4px}
+.s0{background:#fff;color:var(--sub)}.s1{background:var(--b-soft);color:var(--b);border-color:var(--b-soft)}.s2{background:var(--pri);color:#fff;border-color:var(--pri)}
+.toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,8px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:6px;font-size:14px;opacity:0;transition:opacity .15s,transform .15s;pointer-events:none;z-index:20;max-width:90vw}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+.code{font:700 28px/1 "IBM Plex Sans KR",sans-serif;letter-spacing:.14em}
+.empty{text-align:center;padding:28px 12px;color:var(--sub)}
+.foot{font-size:12.5px;color:var(--sub);margin-top:28px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.crit{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.crit button{min-height:34px;padding:4px 10px;font-size:12.5px;font-weight:500;border-radius:4px}
+.crit button[aria-pressed=true]{background:var(--pri);border-color:var(--pri);color:#fff}
+.hero{padding:8px 0 4px}.hero h1{font-size:30px;line-height:1.3}
+.final{border:2px solid var(--pri)}
 </style>
 </head>
 <body>
-<header><div class="bar">
-  <div class="logo" onclick="go('')">LINK<small>생각은 자유롭게, 협업은 유기적으로</small></div>
-  <div class="steps" id="steps"></div>
-  <div class="light" id="light"></div>
-</div></header>
-<main id="app"></main>
-<div class="toast" id="toast"></div>
+<header><div class="hd"><a class="logo" href="./">LINK</a><div class="proj" id="proj"></div><span id="mode"></span></div><div class="stepper" id="steps" hidden></div></header>
+<main id="app" aria-live="polite"><div class="empty">불러오는 중…</div></main>
+<div class="bar" id="bar" hidden><div class="in" id="barIn"></div></div>
+<div class="toast" id="toast" role="status"></div>
 
-<script>
-/* ===================== 공통 유틸 ===================== */
-const $ = s => document.querySelector(s);
+<script type="module">
+/* ================== 설정 ==================
+   Firebase 콘솔 > 프로젝트 설정 > 웹 앱의 firebaseConfig를 붙여 넣으면 실시간 서버 모드로 동작합니다.
+   null이면 '로컬 시연 모드'(이 브라우저 안에서만, 탭 여러 개로 시연 가능). */
+const FIREBASE_CONFIG = null;
+
+/* ================== 유틸 ================== */
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const enc = obj => btoa(unescape(encodeURIComponent(JSON.stringify(obj)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-const dec = str => { let s = str.trim().replace(/-/g,'+').replace(/_/g,'/'); while (s.length % 4) s += '='; return JSON.parse(decodeURIComponent(escape(atob(s)))); };
-const rid = (n=6) => Array.from(crypto.getRandomValues(new Uint8Array(n))).map(b => 'abcdefghjkmnpqrstuvwxyz23456789'[b % 31]).join('');
-const now = () => Date.now();
-const fmtTime = ms => { const s = Math.max(0, Math.round(ms/1000)); return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; };
-const store = {
-  get(k){ try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; } },
-  set(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+const rid = (n=6, a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789') => Array.from(crypto.getRandomValues(new Uint8Array(n)), b => a[b % a.length]).join('');
+const ls = { get:k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}, set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}} };
+const toast = m => { const t=$('#toast'); t.textContent=m; t.classList.add('on'); clearTimeout(t.h); t.h=setTimeout(()=>t.classList.remove('on'),2200); };
+const copy = async t => { try{ await navigator.clipboard.writeText(t); toast('복사했어요'); }catch(e){ toast('자동 복사가 막혀 있어요. 길게 눌러 복사해 주세요'); } };
+const today = () => new Date().toISOString().slice(0,10);
+const addDays = (d,n) => { const x=new Date(d+'T00:00:00'); x.setDate(x.getDate()+n); return x.toISOString().slice(0,10); };
+const md = d => { const [y,m,dd]=d.split('-'); return `${+m}/${+dd}`; };
+const COLORS = ['#3156e8','#16825d','#b86a00','#9b3dc9','#c4372f','#0f8a9d','#6b5b3e','#d1477a'];
+const ME = (!FIREBASE_CONFIG && new URLSearchParams(location.search).get('as')) || ls.get('link.uid') || (()=>{ const u='u'+rid(10,'abcdefghijkmnpqrstuvwxyz23456789'); ls.set('link.uid',u); return u; })();
+
+/* ================== 데이터 계층 (Firebase / 로컬) ================== */
+function setPath(o,p,v){ const k=p.split('.'); for(let i=0;i<k.length-1;i++) o=(o[k[i]] ??= {}); if(v===null) delete o[k.at(-1)]; else o[k.at(-1)]=v; }
+const Local = {
+  k:c=>'link.room.'+c, bc:'BroadcastChannel' in window ? new BroadcastChannel('link') : null, subs:new Set(),
+  async get(c){ return ls.get(this.k(c)); },
+  async create(c,d){ ls.set(this.k(c),d); this.ping(c); },
+  async update(c,patch){ const d=ls.get(this.k(c)); if(!d) throw new Error('no room'); for(const [k,v] of Object.entries(patch)) setPath(d,k,v); ls.set(this.k(c),d); this.ping(c); },
+  ping(c){ this.bc?.postMessage(c); this.subs.forEach(s=>s.c===c&&s.f()); },
+  subscribe(c,cb){ const s={c,f:()=>cb(ls.get(this.k(c)))}; this.subs.add(s);
+    const m=e=>e.data===c&&s.f(), st=e=>e.key===this.k(c)&&s.f(); this.bc?.addEventListener('message',m); addEventListener('storage',st); s.f();
+    return ()=>{ this.subs.delete(s); this.bc?.removeEventListener('message',m); removeEventListener('storage',st); }; }
 };
-function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),1800); }
-async function copy(text){ try { await navigator.clipboard.writeText(text); toast('복사했어요'); } catch(e){ toast('자동 복사가 막혀 있어요. 직접 선택해서 복사해 주세요'); } }
-// 결정적 셔플 (세션 id 기반) — 새로고침해도 순서 유지
-function seeded(seedStr){ let h=2166136261; for (const c of seedStr) { h^=c.charCodeAt(0); h=Math.imul(h,16777619); } return () => { h^=h<<13; h^=h>>>17; h^=h<<5; return ((h>>>0)%100000)/100000; }; }
-function shuffle(arr, seed){ const r=seeded(seed), a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(r()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+async function makeFirebase(cfg){
+  const B='https://www.gstatic.com/firebasejs/10.12.5/';
+  const { initializeApp } = await import(B+'firebase-app.js'); const fs = await import(B+'firebase-firestore.js');
+  const db = fs.getFirestore(initializeApp(cfg)), ref = c => fs.doc(db,'rooms',c);
+  return {
+    async get(c){ const s=await fs.getDoc(ref(c)); return s.exists()?s.data():null; },
+    async create(c,d){ await fs.setDoc(ref(c),d); },
+    async update(c,patch){ const p={}; for(const [k,v] of Object.entries(patch)) p[k]= v===null?fs.deleteField():v; await fs.updateDoc(ref(c),p); },
+    subscribe(c,cb){ return fs.onSnapshot(ref(c), s=>cb(s.exists()?s.data():null), e=>toast('서버 연결 오류: '+e.code)); }
+  };
+}
+let Remote = null;
+if (FIREBASE_CONFIG) { try { Remote = await makeFirebase(FIREBASE_CONFIG); } catch(e){ console.error(e); } }
 
-/* ===================== 상수 ===================== */
-const CHECKS = [
-  {k:'new',  label:'처음 보는 관점이다',        short:'처음'},
-  {k:'merge',label:'다른 의견과 합치면 좋겠다',  short:'합치기'},
-  {k:'more', label:'무슨 뜻인지 더 듣고 싶다',   short:'더 듣기'},
-  {k:'diff', label:'나는 다르게 생각한다',       short:'다르게'},
-  {k:'worry',label:'걱정되는 점이 있다',         short:'걱정'}
+/* ================== 유형 · 팀 구성 설정 (기획서 3·4장) ================== */
+const TYPES = {
+  present:{ name:'발표형', think:'전달 중심', crit:['메시지 명확성','청중 적합성','시간 적합성'],
+    hints:['이 내용을 처음 듣는 학생이 발표가 끝난 뒤에도 기억했으면 하는 한 가지는 무엇인가요?','청중이 발표 중간에 가장 먼저 던질 질문은 무엇일까요?','핵심 주장을 한 문장으로 말하면 무엇인가요?','주어진 발표 시간 안에 꼭 빼야 할 내용은 무엇일까요?'],
+    roles:[['자료 조사',6,'정리형'],['구성·기획',5,'아이디어형'],['PPT 제작',8,'실행형'],['발표',5,'발표형'],['대본·예상 질문',4,'정리형']],
+    plan:[['발표 구성안 (도입·전개·마무리)','구성·기획'],['근거 자료 수집','자료 조사'],['PPT 목차 확정','구성·기획'],['슬라이드별 핵심 문장 작성','PPT 제작'],['PPT 디자인 통일','PPT 제작'],['발표 대본 작성','대본·예상 질문'],['예상 질문 목록 정리','대본·예상 질문'],['리허설','발표']] },
+  research:{ name:'연구·보고서형', think:'검증 중심', crit:['자료 신뢰성','논리적 타당성','근거 충분성'],
+    hints:['현재 주장의 반대 주장에는 어떤 사례가 있을까요?','이 주장을 뒷받침하는 가장 믿을 만한 출처는 무엇일까요?','근거에서 결론까지 건너뛴 단계는 없나요?','이 결론이 틀렸다면 어떤 자료가 나와야 할까요?'],
+    roles:[['문헌 조사',7,'정리형'],['데이터 분석',6,'실행형'],['목차·논리 구성',4,'아이디어형'],['본문 작성',8,'실행형'],['검토·교정',3,'정리형']],
+    plan:[['조사 항목 확정','목차·논리 구성'],['자료 수집','문헌 조사'],['데이터 정리·분석','데이터 분석'],['보고서 목차','목차·논리 구성'],['초안 작성','본문 작성'],['출처·근거 점검','검토·교정'],['수정 및 제출','본문 작성']] },
+  plan:{ name:'기획·창의형', think:'확장 중심', crit:['독창성','실현 가능성','타깃 적합성'],
+    hints:['이 아이디어가 근거로 삼는 전제 하나를 뒤집는다면 무엇이 달라질까요?','전혀 다른 분야에서 같은 문제를 해결한 사례를 떠올려 볼까요?','타깃이 실제로 불편해하는 순간은 언제인가요?','이미 있는 서비스와 무엇이 다른가요?'],
+    roles:[['타깃 리서치',5,'정리형'],['콘셉트 기획',6,'아이디어형'],['실행 전략',5,'정리형'],['시각 자료 제작',7,'실행형'],['피칭·발표',4,'발표형']],
+    plan:[['타깃 분석','타깃 리서치'],['콘셉트 설정','콘셉트 기획'],['아이디어 구체화','콘셉트 기획'],['실행 전략 수립','실행 전략'],['기획서 시각 자료','시각 자료 제작'],['피칭 준비','피칭·발표']] },
+  make:{ name:'제작·실습형', think:'실행 중심', crit:['구현 가능성','필요 자원','일정 적합성'],
+    hints:['2주라는 기한 안에 실현 가능한 아이디어에는 어떤 것이 있을까요?','지금 가진 도구와 예산만으로 만들 수 있는 가장 작은 버전은?','가장 시간이 오래 걸릴 단계는 어디일까요?','실패하면 다시 만들 시간이 있나요?'],
+    roles:[['설계',5,'아이디어형'],['제작',9,'실행형'],['자원·재료 관리',3,'정리형'],['테스트',4,'실행형'],['기록·발표',4,'발표형']],
+    plan:[['가장 작은 버전 정의','설계'],['필요 자원 확보','자원·재료 관리'],['1차 제작','제작'],['테스트','테스트'],['위험 요소 점검·수정','제작'],['결과 기록·발표 준비','기록·발표'],['예비 기간','설계']] }
+};
+const COMP_HINTS = {
+  same:['이 전략이 실패한다면 원인은 무엇일까요?','이 분야의 다른 전공자라면 이 문제를 어떻게 설명할까요?','우리 전공에서 당연하게 여기는 전제 중 의심해 볼 것은?','다른 분야에서 같은 문제를 다르게 해결한 사례가 있을까요?'],
+  mixed:['내 전공의 개념 하나를 다른 전공 팀원도 이해하도록 쉽게 풀어 보면?','이 개념은 {major} 작업에서 어떻게 쓰일 수 있을까요?','내 전공이라서 볼 수 있는 이 문제의 숨은 원인은?']
+};
+const QUIZ = [
+  ['새로운 아이디어를 내는 일','아이디어를 정리하는 일','아이디어형','정리형'],
+  ['앞에 나서서 발표하기','뒤에서 자료 준비하기','발표형','정리형'],
+  ['계획을 세우는 일','직접 만드는 일','정리형','실행형'],
+  ['처음 방향을 넓게 여는 일','마감 전에 끝까지 마무리하는 일','아이디어형','실행형'],
+  ['질문을 받고 설명하는 것','혼자 깊게 파고드는 것','발표형','아이디어형']
 ];
-const REDPEN = [
-  {crit:'현실 연결', q: idea => `「${idea}」가 우리 팀의 실제 조건(시간·인원·마감)에서 작동하지 않는 경우는 언제일까요?`},
-  {crit:'가치',     q: idea => `「${idea}」가 없어도 사용자가 크게 불편하지 않다면, 이 아이디어가 해결하는 진짜 문제는 무엇일까요?`},
-  {crit:'창의적 변수', q: idea => `카톡 투표나 구글폼 같은 기존 방식으로도 「${idea}」를 똑같이 할 수 있다면, 무엇이 새로운가요?`}
-];
-const PHASES = {collect:'IN', review:'SYNC', prep:'SYNC', clash:'SYNC', vote:'SYNC', match:'MATCH', report:'UP'};
-const LIGHTS = {
-  collect:{c:'var(--off)',  t:'AI 꺼짐 · 지금은 사람이 생각할 차례'},
-  join:   {c:'var(--off)',  t:'AI 꺼짐 · 지금은 당신이 생각할 차례'},
-  review: {c:'#e0b100',     t:'AI 질문만 · 답은 내지 않아요'},
-  prep:   {c:'#e0b100',     t:'AI 질문만 · 답은 내지 않아요'},
-  clash:  {c:'var(--warn)', t:'AI 반론 · 빨간 펜'},
-  vote:   {c:'var(--warn)', t:'AI 반론 · 쏠림 감시'},
-  match:  {c:'var(--accent)',t:'AI 추천 · 확정은 팀이'},
-  report: {c:'var(--good)', t:'AI 기록 · 생각의 출처'}
+const TRAITS = { '아이디어형':'새 관점을 여는 사람', '정리형':'흩어진 것을 구조로 만드는 사람', '발표형':'생각을 전달하는 사람', '실행형':'끝까지 만들어 내는 사람' };
+const PHASES = [['lobby','팀 구성'],['in','LINK IN'],['sync','LINK SYNC'],['match','LINK MATCH'],['up','LINK UP']];
+
+/* ================== '규칙 기반 AI' (실제 서비스에서 LLM으로 교체) ================== */
+const JOSA = /(으로|에서|에게|하고|이나|이랑|부터|까지|처럼|보다|을|를|이|가|은|는|의|에|로|와|과|도|만|한다|하기|하는|해서|하면|하여)$/;
+const words = t => (t||'').replace(/[^\p{L}\p{N}\s]/gu,' ').split(/\s+/).map(w=>w.replace(JOSA,'')).filter(w=>w.length>=2);
+const grams = t => { const s=(t||'').replace(/[^\p{L}\p{N}]/gu,''); const g=new Set(); for(let i=0;i<s.length-1;i++) g.add(s.slice(i,i+2)); return g; };
+const sim = (a,b) => { const A=grams(a),B=grams(b); if(!A.size||!B.size) return 0; let x=0; A.forEach(g=>B.has(g)&&x++); return x/(A.size+B.size-x); };
+const AI = {
+  comp(r){ const all=Object.values(r.members||{}).map(m=>(m.major||'').trim()).filter(Boolean), key=x=>x.replace(/\s/g,'').replace(/(학부|전공|과)$/,''); const ks=[...new Set(all.map(key))]; return {kind: ks.length<=1?'same':'mixed', majors:[...new Set(all)]}; },
+  hint(r, i){ const T=TYPES[r.type], c=this.comp(r); const others=Object.entries(r.members||{}).filter(([u])=>u!==ME).map(([,m])=>m.major).filter(Boolean);
+    const pool=[...T.hints.map(q=>({q,tag:T.name})), ...COMP_HINTS[c.kind].map(q=>({q:q.replace('{major}', others[i%Math.max(1,others.length)]||'다른 전공'), tag:c.kind==='same'?'동일 전공 팀':'융합 전공 팀'}))];
+    return pool[i%pool.length]; },
+  why(chain){ if(!chain.length) return '이 과제에서 가장 해결하고 싶은 문제는 무엇인가요?';
+    const last=chain.at(-1).a.trim(); const s=last.length>28?last.slice(0,28)+'…':last;
+    return ['왜 「'+s+'」라고 생각하나요?','그 이유가 생긴 원인은 무엇일까요?','그렇다면 그 원인은 왜 계속 남아 있을까요?','결국 가장 바꾸고 싶은 한 가지는 무엇인가요?'][Math.min(chain.length-1,3)]; },
+  analyze(r){
+    const cards=Object.entries(r.cards||{}).map(([id,c])=>({id,...c})).sort((a,b)=>a.at-b.at);
+    if(!cards.length) return {cards,A:[],B:[],kw:[],avg:0};
+    const n=cards.length, S=cards.map((a,i)=>cards.map((b,j)=>i===j?0:sim(a.text,b.text)));
+    cards.forEach((c,i)=>c.s=n>1?S[i].reduce((x,y)=>x+y,0)/(n-1):0);
+    const df={}; cards.forEach(c=>new Set(words(c.text)).forEach(w=>df[w]=(df[w]||0)+1));
+    const kw=Object.entries(df).filter(([,v])=>v>=2).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([w])=>w);
+    cards.forEach(c=>{ const ws=new Set(words(c.text)); c.k=kw.filter(w=>ws.has(w)).length; c.score=c.s+c.k*0.08; });
+    const seed=cards.slice().sort((a,b)=>b.score-a.score)[0];
+    let A=cards.filter(c=>c===seed || sim(c.text,seed.text)>=0.16 || (c.k>=1 && seed.k>=1 && words(c.text).some(w=>words(seed.text).includes(w))));
+    if(A.length>Math.ceil(n*0.7)) A=A.sort((a,b)=>b.score-a.score).slice(0,Math.ceil(n*0.6));
+    const B=cards.filter(c=>!A.includes(c)).sort((a,b)=>a.score-b.score).slice(0,3);
+    const avg=n>1?cards.reduce((x,c)=>x+c.s,0)/n:0;
+    return {cards,A,B,kw,avg,seed};
+  },
+  short(t,n=20){ t=(t||'').trim(); return t.length>n?t.slice(0,n)+'…':t; },
+  diffWords(b,an){ const base=new Set(an.A.flatMap(x=>words(x.text))); return words(b.text).filter(w=>!base.has(w)); },
+  counter(b,an){ return `「${this.short(b.text,24)}」 의견을 기존 방향에 반영하면 무엇이 달라질까요? 반영하지 않으면 무엇을 놓칠까요?`; },
+  fuse(an){ if(!an.seed||!an.B.length) return ''; const b=an.B[0]; const d=this.diffWords(b,an).slice(0,2).join(' ');
+    return `${an.seed.text.replace(/[.。]$/,'')}. 여기에 소수 의견인 '${b.text.replace(/[.。]$/,'')}'를 더한다`; },
+  recommend(r){
+    const T=TYPES[r.type], mem=Object.entries(r.members||{}), load=Object.fromEntries(mem.map(([u])=>[u,0])), out={};
+    const score=(m,[name,,trait])=>(m.trait===trait?3:0)+((m.wants||[]).includes(name)?3:0)+((m.skills||'').split(/[,\s]+/).some(s=>s&&name.includes(s.slice(0,2)))?2:0);
+    T.roles.slice().sort((a,b)=>b[1]-a[1]).forEach(role=>{
+      const best=mem.map(([u,m])=>({u,v:score(m,role)-load[u]*0.6})).sort((a,b)=>b.v-a.v)[0]; if(!best) return;
+      out[role[0]]=best.u; load[best.u]+=role[1]; });
+    return out; },
+  reason(m,[name,,trait]){ const r=[]; if(m.trait===trait) r.push(`${trait} 성향`); if((m.wants||[]).includes(name)) r.push('희망 역할'); if((m.skills||'').split(/[,\s]+/).some(s=>s&&name.includes(s.slice(0,2)))) r.push('보유 역량'); return r.join(', ')||'업무량 균형'; },
+  plan(r){ const T=TYPES[r.type], start=today(), end=r.deadline&&r.deadline>start?r.deadline:addDays(start,14);
+    const span=Math.max(1,(new Date(end)-new Date(start))/864e5), n=T.plan.length, out={};
+    T.plan.forEach(([title,role],i)=>{ out['t'+i]={title,role,who:(r.match?.assign||{})[role]||'',due:addDays(start,Math.max(1,Math.round(span*(i+1)/n))),status:0,i}; });
+    return out; }
 };
 
-/* ===================== 라우팅 ===================== */
-let S = null;            // 진행자 세션 상태
-let timerH = null;
-function go(hash){ location.hash = hash; }
-window.addEventListener('hashchange', route);
-function route(){
-  clearInterval(timerH);
-  const h = location.hash.slice(1);
-  if (h.startsWith('join=')) return viewJoin(h.slice(5));
-  if (h.startsWith('host=')) { S = store.get('link:'+h.slice(5)); if (S) return renderHost(); }
-  if (h === 'new') return viewNew();
-  S = null; viewHome();
-}
-function setChrome(phase){
-  const order = ['IN','SYNC','MATCH','UP'];
-  const cur = phase ? (PHASES[phase] || (phase==='join'?'IN':null)) : null;
-  const ci = order.indexOf(cur);
-  $('#steps').innerHTML = order.map((s,i)=>`<span class="step ${i===ci?'on':(ci>i?'done':'')}">LINK ${s}</span>`).join('');
-  const L = LIGHTS[phase];
-  $('#light').style.display = L ? '' : 'none';
-  if (L) $('#light').innerHTML = `<i style="background:${L.c}"></i>${L.t}`;
-}
-function save(){ if (S) store.set('link:'+S.session.id, S); }
-function log(ev){ S.log.push({t:now(), ev}); }
+/* ================== 상태 · 렌더 ================== */
+const params = new URLSearchParams(location.search);
+let CODE = (params.get('r')||'').toUpperCase(), LOCAL = params.get('local')==='1' || !Remote, R = null, unsub = null, pending = false;
+const db = () => LOCAL ? Local : Remote;
+const ui = ls.get('link.ui.'+CODE+'.'+ME) || {draft:'',why:'',hintI:0,chain:[],quiz:[],onb:{}};
+const saveUi = () => ls.set('link.ui.'+CODE+'.'+ME, ui);
+const up = patch => db().update(CODE, patch).catch(e=>{ console.error(e); toast('저장하지 못했어요. 연결을 확인해 주세요'); });
+const isHost = () => R?.hostId===ME;
+const members = () => Object.entries(R?.members||{}).sort((a,b)=>a[1].joinedAt-b[1].joinedAt);
+const mName = u => R?.members?.[u]?.name || '미배정';
+const av = u => { const i=members().findIndex(([x])=>x===u); return `<span class="av" style="background:${COLORS[(i<0?0:i)%COLORS.length]}" aria-hidden="true">${esc((mName(u)||'?')[0])}</span>`; };
+const myCards = () => Object.entries(R.cards||{}).filter(([,c])=>c.by===ME);
 
-/* ===================== 홈 ===================== */
+function shell(){
+  $('#mode').textContent = LOCAL ? '로컬 시연 모드' : '실시간 연결됨'; 
+  $('#mode').title = LOCAL ? '이 브라우저 안에서만 동작해요. 서버 연결은 Firebase 설정 후 가능해요.' : 'Firebase 실시간 서버에 연결되어 있어요';
+  if(!R){ $('#steps').hidden=true; $('#proj').textContent=''; return; }
+  $('#proj').textContent = `${R.name}, ${TYPES[R.type].name}`;
+  const pi = PHASES.findIndex(p=>p[0]===R.phase);
+  $('#steps').hidden=false; $('#steps').innerHTML = PHASES.map(([k,l],i)=>`<div class="st ${i===pi?'on':i<pi?'done':''}" ${i===pi?'aria-current="step"':''}>${l}</div>`).join('');
+}
+function bar(html){ const b=$('#bar'); if(!html){ b.hidden=true; return; } b.hidden=false; $('#barIn').innerHTML=html; }
+function render(force){
+  const a=document.activeElement;
+  if(!force && a && a.closest?.('#app') && /INPUT|TEXTAREA|SELECT/.test(a.tagName)){ pending=true; return; }
+  pending=false; shell();
+  if(!CODE) return viewHome();
+  if(!R) return viewMissing();
+  if(!R.members?.[ME]) return viewJoin();
+  ({lobby:viewLobby,in:viewIn,sync:viewSync,match:viewMatch,up:viewUp})[R.phase]();
+}
+document.addEventListener('focusout',()=>setTimeout(()=>pending&&!document.activeElement?.closest?.('#app input,#app textarea,#app select')&&render(),0));
+const on = (sel,ev,fn) => $$(sel).forEach(el=>el.addEventListener(ev,fn));
+
+/* ---------- 홈 ---------- */
 function viewHome(){
-  setChrome(null);
-  const recent = Object.keys(localStorage).filter(k=>k.startsWith('link:')).map(k=>store.get(k)).filter(Boolean).sort((a,b)=>b.session.createdAt-a.session.createdAt).slice(0,5);
+  bar(null);
   $('#app').innerHTML = `
-  <div class="card hero">
-    <span class="pill">대학생 팀플용 · 설치 없이 링크로</span>
-    <h1>AI보다 먼저, 우리 생각부터.</h1>
-    <p class="muted">LINK는 팀 회의를 <b>IN(블라인드 발산) → SYNC(소수 의견부터 검토 + 반론) → MATCH(역할) → UP(기여 기록)</b> 순서로 진행해요. AI는 팀원의 생각이 다 나온 뒤에 질문과 반론으로만 등장해요.</p>
-    <div class="row" style="margin-top:14px">
-      <button class="primary" onclick="go('new')">새 회의 세션 만들기 (진행자)</button>
-      <button onclick="startDemo()">데모 데이터로 바로 체험</button>
-    </div>
-  </div>
-  <div class="grid2">
-    <div class="card"><h3>팀원이라면</h3><p class="muted small">진행자가 카톡에 올린 참여 링크를 열면 돼요. 앱 설치도, 가입도 필요 없어요. 다 쓰면 나오는 <b>제출 코드</b>를 카톡방에 붙여 넣으면 끝.</p></div>
-    <div class="card"><h3>교수님·조교라면</h3><p class="muted small">회의가 끝나면 UP 단계에서 <b>기여 기록 리포트</b>가 만들어져요. 누가 얼마나 생각을 냈고, 검토에 참여했고, 어떤 역할을 맡았는지 팀 대표가 PDF로 제출할 수 있어요.</p></div>
-  </div>
-  ${recent.length ? `<div class="card"><h3>이 기기에서 진행한 세션</h3>${recent.map(r=>`<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--line);padding:6px 0"><span>${esc(r.session.topic)} <span class="pill gray">${PHASES[r.phase]||''}</span></span><button class="ghost" onclick="go('host=${r.session.id}')">열기</button></div>`).join('')}</div>`:''}
-  <p class="note">MVP 안내: 서버 없이 동작하는 시연용 버전이에요. 진행자 화면의 데이터는 이 브라우저에만 저장돼요. 'AI' 묶기·질문·반론은 데모용 규칙 기반이고, 실제 서비스에서는 LLM이 카드 내용을 읽고 생성해요.</p>`;
-}
-
-/* ===================== 세션 만들기 ===================== */
-function viewNew(){
-  setChrome(null);
-  $('#app').innerHTML = `
-  <h1>새 회의 세션</h1>
-  <p class="muted">주제는 "어떻게 하면 ~할 수 있을까?(HMW)" 형태가 좋아요.</p>
-  <div class="card">
-    <label>회의 주제 (HMW)</label><input type="text" id="f-topic" placeholder="어떻게 하면 우리 팀 발표를 더 설득력 있게 만들 수 있을까?">
+  <section class="hero">
+    <h1>생각은 자유롭게,<br>협업은 유기적으로.</h1>
+    <p class="sub">팀플 아이디어를 각자 먼저 쓰고, 함께 고르고, 역할과 일정까지 정하는 곳이에요. 앱 설치나 가입 없이 링크로 들어와요.</p>
+  </section>
+  <form class="card" id="fNew" novalidate>
+    <h2 style="margin-top:0">새 프로젝트 만들기</h2>
+    <label for="nName">프로젝트 이름</label><input id="nName" required placeholder="예: 창의적기획과문제해결 2조" autocomplete="off">
+    <label for="nTopic">주제</label><input id="nTopic" required placeholder="예: 대학생 팀플 무임승차를 줄이는 서비스 기획" autocomplete="off">
+    <label id="tl">프로젝트 유형</label>
+    <div class="choice" role="radiogroup" aria-labelledby="tl">${Object.entries(TYPES).map(([k,t],i)=>`<button type="button" role="radio" aria-checked="${i===2}" aria-pressed="${i===2}" data-type="${k}"><b>${t.name}</b><br><span class="xs sub">${t.crit.join(', ')}</span></button>`).join('')}</div>
+    <p class="help">유형에 따라 AI 힌트, SYNC 분석 기준, 실행 계획이 달라져요.</p>
     <div class="grid2">
-      <div><label>팀원 수</label><input type="number" id="f-n" value="5" min="2" max="12"></div>
-      <div><label>숙고 시간(분) · 비동기면 크게</label><input type="number" id="f-min" value="10" min="1"></div>
-      <div><label>1인 최소 카드 수 (전원 충족 시 공개)</label><input type="number" id="f-mincards" value="3" min="1" max="10"></div>
-      <div><label>1인 투표권</label><input type="number" id="f-votes" value="2" min="1" max="5"></div>
+      <div><label for="nDue">최종 마감일</label><input id="nDue" type="date" value="${addDays(today(),14)}"></div>
+      <div><label for="nPer">1인 아이디어 카드 수</label><select id="nPer">${[2,3,4,5].map(n=>`<option ${n===3?'selected':''}>${n}</option>`).join('')}</select></div>
     </div>
-    <label>맡을 역할 (쉼표로 구분, MATCH 단계에서 사용)</label><input type="text" id="f-roles" value="자료조사, PPT 디자인, 발표, 보고서 작성, 일정관리">
-    <div class="row" style="margin-top:16px"><button class="primary" onclick="createSession()">세션 만들기</button><button class="ghost" onclick="go('')">취소</button></div>
-  </div>`;
+    <button class="pri wide" style="margin-top:16px" type="submit">프로젝트 만들고 팀원 초대하기</button>
+  </form>
+  <form class="card" id="fJoin" novalidate>
+    <h3>초대 코드로 참여</h3>
+    <div class="row"><label for="jCode" class="sr">초대 코드</label><input id="jCode" class="grow" placeholder="6자리 코드" maxlength="6" autocapitalize="characters" autocomplete="off" style="text-transform:uppercase"><button type="submit">참여</button></div>
+  </form>
+  <section class="card">
+    <h3>시뮬레이션으로 둘러보기</h3>
+    <p class="sub sm">같은 주제를 두 팀 구성으로 비교해 보세요. 팀원 3명이 이미 카드를 낸 상태에서, 내가 진행자로 시작해요.</p>
+    <div class="grid2" style="margin-top:8px"><button id="dSame">동일 전공 팀 (경영 4명)</button><button id="dMixed">융합 전공 팀 (4개 전공)</button></div>
+  </section>
+  <p class="foot">${LOCAL?'지금은 로컬 시연 모드예요. 서버가 연결되면 링크를 받은 팀원 누구나 실시간으로 함께 써요.':'링크를 받은 팀원 누구나 로그인 없이 실시간으로 함께 써요.'}</p>`;
+  let type='plan';
+  on('[data-type]','click',e=>{ type=e.currentTarget.dataset.type; $$('[data-type]').forEach(b=>{const s=b.dataset.type===type; b.setAttribute('aria-pressed',s); b.setAttribute('aria-checked',s);}); });
+  $('#fNew').onsubmit = async e => { e.preventDefault();
+    const name=$('#nName').value.trim(), topic=$('#nTopic').value.trim();
+    if(!name||!topic){ toast('프로젝트 이름과 주제를 적어 주세요'); (name?$('#nTopic'):$('#nName')).focus(); return; }
+    const code=rid(); await db().create(code,{v:2,name,topic,type,deadline:$('#nDue').value,per:+$('#nPer').value,hostId:ME,createdAt:Date.now(),phase:'lobby',members:{},cards:{}});
+    go(code); };
+  $('#fJoin').onsubmit = e => { e.preventDefault(); const c=$('#jCode').value.trim().toUpperCase(); if(c.length!==6) return toast('6자리 코드를 입력해 주세요'); go(c); };
+  $('#dSame').onclick = ()=>demo('same'); $('#dMixed').onclick = ()=>demo('mixed');
 }
-function newState(session){
-  return {session, phase:'collect', submissions:{}, cards:[], groups:[], order:[], reviewIdx:0, checks:{}, candidates:[], clash:{}, clashIdx:0, votes:{}, advocateSeen:false, final:null, rolesRevealed:false, assign:{}, log:[]};
-}
-function createSession(){
-  const topic = $('#f-topic').value.trim() || $('#f-topic').placeholder;
-  const session = {
-    id: rid(), topic, members: +$('#f-n').value || 5, minutes: +$('#f-min').value || 10,
-    minCards: +$('#f-mincards').value || 3, votes: +$('#f-votes').value || 2,
-    roles: $('#f-roles').value.split(',').map(s=>s.trim()).filter(Boolean), createdAt: now()
-  };
-  session.deadline = session.createdAt + session.minutes*60000;
-  S = newState(session); log('세션 생성'); save(); go('host='+session.id);
-}
-function joinLink(){
-  const s = S.session;
-  const payload = {id:s.id, topic:s.topic, minCards:s.minCards, deadline:s.deadline, roles:s.roles};
-  return location.href.split('#')[0] + '#join=' + enc(payload);
-}
+function go(code, local=LOCAL){ const as=new URLSearchParams(location.search).get('as'); location.search = `?r=${code}${local&&Remote?'&local=1':''}${as?'&as='+as:''}`; }
+function viewMissing(){ bar(null); $('#app').innerHTML = `<div class="card empty"><h2>프로젝트를 찾을 수 없어요</h2><p>코드 <b>${esc(CODE)}</b>를 다시 확인해 주세요.</p><a href="./"><button>처음으로</button></a></div>`; }
 
-/* ===================== 팀원 참여 화면 ===================== */
-function viewJoin(code){
-  let ses; try { ses = dec(code); } catch(e){ $('#app').innerHTML = `<div class="card">링크가 올바르지 않아요. 진행자에게 다시 받아 주세요.</div>`; return; }
-  setChrome('join');
-  const dk = 'link-draft:'+ses.id;
-  const draft = store.get(dk) || {name:'', cards:[{idea:'',reason:''}], roles:[]};
-  while (draft.cards.length < ses.minCards) draft.cards.push({idea:'',reason:''});
-  const saveDraft = () => store.set(dk, draft);
-  function render(){
+/* ---------- 참여 (전공 · 역량 · 성향 질문) ---------- */
+function viewJoin(){
+  const T=TYPES[R.type], o=ui.onb; o.wants ||= [];
+  const step = o.step||1;
+  if(step===1){
     $('#app').innerHTML = `
-    <span class="pill gray">LINK IN · 블라인드 발산</span>
-    <h1>${esc(ses.topic)}</h1>
-    <p class="muted">다른 팀원의 카드도, AI의 답도 보이지 않아요. 지금 떠오르는 생각을 <b>최소 ${ses.minCards}장</b> 적어 주세요. 완성된 답이 아니어도 괜찮아요.</p>
-    <div class="card row" style="justify-content:space-between"><span>남은 숙고 시간</span><span class="big" id="cd">-</span></div>
-    <div class="card">
-      <label>이름 (기여 기록용 · 카드에는 표시되지 않아요)</label>
-      <input type="text" id="j-name" value="${esc(draft.name)}" placeholder="이름">
-      ${draft.cards.map((c,i)=>`
-        <div class="ideacard">
-          <div class="row" style="justify-content:space-between"><b>카드 ${i+1}</b>${draft.cards.length>1?`<button class="ghost danger" data-del="${i}">삭제</button>`:''}</div>
-          <label>아이디어 한 줄</label><input type="text" data-i="${i}" data-f="idea" value="${esc(c.idea)}" placeholder="예: 발표 첫 장에 우리 팀이 직접 겪은 장면을 넣는다">
-          <label>근거 한 줄 (왜 그렇게 생각했나요?)</label><input type="text" data-i="${i}" data-f="reason" value="${esc(c.reason)}" placeholder="예: 평가팀이 처음 10초에 공감해야 끝까지 듣는다">
-        </div>`).join('')}
-      <button onclick="" id="j-add">+ 카드 추가</button>
-      ${ses.roles?.length ? `<label style="margin-top:16px">맡고 싶은 역할 (복수 선택 · 공개 전까지 아무도 못 봐요)</label>
-        <div class="row">${ses.roles.map(r=>`<button class="chk ${draft.roles.includes(r)?'on':''}" data-role="${esc(r)}" style="padding:0 10px">${esc(r)}</button>`).join('')}</div>`:''}
-    </div>
-    <button class="primary" id="j-submit" style="width:100%;padding:14px">제출 코드 만들기</button>
-    <div id="j-out"></div>
-    <p class="note">제출 코드를 팀 카톡방에 붙여 넣으면 진행자가 모아서 한 번에 공개해요. 공개 화면에서 작성자는 표시되지 않아요. (MVP는 서버가 없어서 코드 안에 이름이 함께 들어 있어요.)</p>`;
-    document.querySelectorAll('[data-f]').forEach(el => el.oninput = e => { draft.cards[+el.dataset.i][el.dataset.f] = el.value; saveDraft(); });
-    $('#j-name').oninput = e => { draft.name = e.target.value; saveDraft(); };
-    document.querySelectorAll('[data-del]').forEach(b => b.onclick = () => { draft.cards.splice(+b.dataset.del,1); saveDraft(); render(); });
-    $('#j-add').onclick = () => { draft.cards.push({idea:'',reason:''}); saveDraft(); render(); };
-    document.querySelectorAll('[data-role]').forEach(b => b.onclick = () => { const r=b.dataset.role; draft.roles = draft.roles.includes(r) ? draft.roles.filter(x=>x!==r) : [...draft.roles, r]; saveDraft(); render(); });
-    $('#j-submit').onclick = () => {
-      const cards = draft.cards.map(c=>({idea:c.idea.trim(), reason:c.reason.trim()})).filter(c=>c.idea);
-      if (!draft.name.trim()) return toast('이름을 적어 주세요');
-      if (cards.length < ses.minCards) return toast(`아이디어를 ${ses.minCards}장 이상 적어 주세요`);
-      const code = 'LINK.' + enc({s:ses.id, n:draft.name.trim(), c:cards, r:draft.roles});
-      $('#j-out').innerHTML = `<div class="card"><b>제출 코드</b><p class="muted small">아래 코드를 복사해서 팀 카톡방에 붙여 넣어 주세요.</p>
-        <textarea class="codebox" readonly>${code}</textarea>
-        <div class="row" style="margin-top:8px"><button class="primary" id="j-copy">복사하기</button>${navigator.share?'<button id="j-share">공유하기</button>':''}</div></div>`;
-      $('#j-copy').onclick = () => copy(code);
-      if ($('#j-share')) $('#j-share').onclick = () => navigator.share({text: code}).catch(()=>{});
-    };
+    <h1>${esc(R.name)}</h1><p class="sub">${esc(R.topic)}</p>
+    <form class="card" id="f1" novalidate>
+      <h2 style="margin-top:0">나를 소개해 주세요 <span class="xs sub">1/2</span></h2>
+      <label for="oName">이름</label><input id="oName" value="${esc(o.name||'')}" autocomplete="name" required>
+      <label for="oMajor">전공</label><input id="oMajor" value="${esc(o.major||'')}" placeholder="예: 경영학과" required>
+      <p class="help">팀원들의 전공으로 '동일 전공 팀'인지 '융합 전공 팀'인지 판단해 AI 질문을 맞춰요.</p>
+      <label for="oSkill">자신 있는 것이나 경험</label><input id="oSkill" value="${esc(o.skills||'')}" placeholder="예: PPT, 자료조사, 영상편집">
+      <label>맡고 싶은 역할 <span class="xs sub">(여러 개 선택)</span></label>
+      <div class="opt">${T.roles.map(([n])=>`<button type="button" data-want="${esc(n)}" aria-pressed="${o.wants.includes(n)}">${esc(n)}</button>`).join('')}</div>
+    </form>`;
+    on('[data-want]','click',e=>{ const n=e.currentTarget.dataset.want; o.wants=o.wants.includes(n)?o.wants.filter(x=>x!==n):[...o.wants,n]; e.currentTarget.setAttribute('aria-pressed',o.wants.includes(n)); saveUi(); });
+    ['oName','oMajor','oSkill'].forEach(id=>$('#'+id).oninput=e=>{ o[{oName:'name',oMajor:'major',oSkill:'skills'}[id]]=e.target.value; saveUi(); });
+    bar(`<span class="msg">협업 성향 질문 5개가 이어져요 (30초)</span><button class="pri" id="n1">다음</button>`);
+    $('#n1').onclick = ()=>{ if(!o.name?.trim()||!o.major?.trim()){ toast('이름과 전공을 적어 주세요'); (o.name?.trim()?$('#oMajor'):$('#oName')).focus(); return; } o.step=2; saveUi(); render(true); };
+  } else {
+    const q=ui.quiz;
+    $('#app').innerHTML = `
+    <h1>어떻게 협업할 때 편한가요?</h1><p class="sub">정답은 없어요. 역할 추천에만 쓰여요. <span class="xs">2/2</span></p>
+    ${QUIZ.map(([a,b],i)=>`<div class="card"><h3>Q${i+1}. 둘 중 더 편한 쪽은?</h3><div class="choice" role="radiogroup" aria-label="질문 ${i+1}">
+      <button type="button" role="radio" data-q="${i}" data-v="0" aria-pressed="${q[i]===0}" aria-checked="${q[i]===0}">${a}</button>
+      <button type="button" role="radio" data-q="${i}" data-v="1" aria-pressed="${q[i]===1}" aria-checked="${q[i]===1}">${b}</button></div></div>`).join('')}`;
+    on('[data-q]','click',e=>{ const i=+e.currentTarget.dataset.q, v=+e.currentTarget.dataset.v; q[i]=v; saveUi();
+      $$(`[data-q="${i}"]`).forEach(b=>{ const s=+b.dataset.v===v; b.setAttribute('aria-pressed',s); b.setAttribute('aria-checked',s); }); $('#n2').disabled = QUIZ.some((_,k)=>q[k]==null); });
+    bar(`<button id="b2">이전</button><span class="msg"></span><button class="pri" id="n2" ${QUIZ.some((_,k)=>q[k]==null)?'disabled':''}>참여하기</button>`);
+    $('#b2').onclick=()=>{ o.step=1; saveUi(); render(true); };
+    $('#n2').onclick = async ()=>{ const sc={}; QUIZ.forEach((x,i)=>{ const t=x[2+q[i]]; sc[t]=(sc[t]||0)+1; });
+      const trait=Object.keys(TRAITS).sort((a,b)=>(sc[b]||0)-(sc[a]||0))[0];
+      await up({[`members.${ME}`]:{name:o.name.trim(),major:o.major.trim(),skills:(o.skills||'').trim(),wants:o.wants,trait,scores:sc,joinedAt:Date.now()}});
+      toast(`${trait}: ${TRAITS[trait]}`); };
   }
-  render();
-  const tick = () => { const el=$('#cd'); if (!el) return; const left = ses.deadline - now(); el.textContent = left>0 ? fmtTime(left) : '마감 — 제출해 주세요'; };
-  tick(); timerH = setInterval(tick, 1000);
 }
 
-/* ===================== 진행자 화면 ===================== */
-function members(){ return Object.keys(S.submissions); }
-function renderHost(){
-  setChrome(S.phase);
-  ({collect:hostCollect, review:hostReview, prep:hostPrep, clash:hostClash, vote:hostVote, match:hostMatch, report:hostReport})[S.phase]();
-  window.scrollTo(0,0);
-}
-function setPhase(p){ S.phase = p; log('단계 이동: '+p); save(); renderHost(); }
-
-/* ---- IN: 수집 ---- */
-function hostCollect(){
-  const s = S.session, subs = S.submissions, names = members();
-  const total = names.reduce((a,n)=>a+subs[n].cards.length,0);
-  const target = s.members * s.minCards * 2;
-  const ready = names.length >= s.members && names.every(n=>subs[n].cards.length >= s.minCards);
+/* ---------- 팀 구성 (로비) ---------- */
+function teamBox(){ const c=AI.comp(R);
+  return `<div class="card"><div class="row sp"><h3>팀원 ${members().length}명</h3><span class="chip ${c.kind==='same'?'w':'p'}">${c.kind==='same'?'동일 전공 팀':'융합 전공 팀'}</span></div>
+  <div class="who-list" style="margin-top:8px">${members().map(([u,m])=>`<div class="m">${av(u)}<div><b>${esc(m.name)}</b>${u===R.hostId?' <span class="xs sub">(진행자)</span>':''}<div class="xs sub">${esc(m.major)}, ${esc(m.trait)}</div></div></div>`).join('')}</div>
+  <p class="help" style="margin-top:10px">${c.kind==='same'?'같은 전공이라 생각이 비슷하게 모이기 쉬워요. AI가 다른 전공의 관점과 반대 사례를 물어요.':'전공이 달라 용어와 관점이 엇갈리기 쉬워요. AI가 전공 사이의 접점을 찾는 질문을 해요.'}</p></div>`; }
+function viewLobby(){
+  const link = location.origin+location.pathname+`?r=${CODE}${LOCAL&&Remote?'&local=1':''}`;
   $('#app').innerHTML = `
-  <span class="pill gray">진행자 화면 · LINK IN</span>
-  <h1>${esc(s.topic)}</h1>
-  <div class="card">
-    <b>1. 참여 링크를 팀 카톡방에 올리세요</b>
-    <p class="muted small">팀원은 설치 없이 링크만 열면 돼요.</p>
-    <div class="row"><input type="text" readonly value="${esc(joinLink())}" class="codebox" style="flex:1"><button class="primary" id="h-copy">링크 복사</button><a href="${esc(joinLink())}" target="_blank"><button>미리 보기</button></a></div>
-  </div>
-  <div class="card">
-    <div class="row" style="justify-content:space-between"><b>2. 팀원들의 생각이 모이는 중</b><span class="muted">남은 시간 <b id="h-cd">-</b></span></div>
-    <p class="muted small">내용은 공개 전까지 아무도 볼 수 없어요. 개수만 보여요. (강의: 질보다 양)</p>
-    <div class="row" style="justify-content:space-between;margin-top:8px"><span>모인 카드 <b>${total}</b>장</span><span class="muted small">목표 ${target}장</span></div>
-    <div class="gauge"><div style="width:${Math.min(100,total/target*100)}%"></div></div>
-    <p style="margin-top:12px">제출 ${names.length} / ${s.members}명 ${names.map(n=>`<span class="pill ${subs[n].cards.length>=s.minCards?'good':'warn'}">${esc(n)} ${subs[n].cards.length}장</span>`).join(' ')}</p>
-  </div>
-  <div class="card">
-    <b>3. 카톡방에 올라온 제출 코드를 붙여 넣으세요</b>
-    <p class="muted small">여러 개를 한꺼번에 붙여 넣어도 돼요. 같은 사람이 다시 내면 새 코드로 바뀌어요.</p>
-    <textarea id="h-codes" placeholder="LINK.eyJz..."></textarea>
-    <div class="row" style="margin-top:8px"><button id="h-add">코드 추가</button></div>
-  </div>
-  <button class="primary" id="h-reveal" style="width:100%;padding:14px" ${ready?'':'disabled'}>전원 제출 완료 · 동시에 익명 공개</button>
-  ${!ready && names.length ? `<p class="small muted" style="text-align:center">전원이 ${s.minCards}장 이상 내야 공개돼요. <button class="ghost small" id="h-force">진행자 권한으로 지금 공개</button></p>`:''}`;
-  $('#h-copy').onclick = () => copy(joinLink());
-  $('#h-add').onclick = () => {
-    const raw = $('#h-codes').value; const found = raw.match(/LINK\.[A-Za-z0-9_-]+/g) || [];
-    let ok=0, bad=0;
-    found.forEach(c => { try { const d = dec(c.slice(5)); if (d.s !== s.id) { bad++; return; } S.submissions[d.n] = {cards:d.c, roles:d.r||[], at:now()}; ok++; } catch(e){ bad++; } });
-    if (ok) log(`제출 코드 ${ok}개 수신`); save(); renderHost();
-    toast(ok ? `${ok}명 제출 반영${bad?` · ${bad}개는 이 세션 코드가 아니에요`:''}` : '올바른 코드를 찾지 못했어요');
-  };
-  $('#h-reveal').onclick = reveal;
-  if ($('#h-force')) $('#h-force').onclick = e => { const b=e.currentTarget; if (b.dataset.sure) return reveal(); b.dataset.sure='1'; b.textContent='정말 공개할까요? 한 번 더 누르면 공개돼요'; };
-  const tick = () => { const el=$('#h-cd'); if (el) el.textContent = Math.max(0,s.deadline-now())>0 ? fmtTime(s.deadline-now()) : '마감'; };
-  tick(); timerH = setInterval(tick,1000);
+  <h1>${esc(R.name)}</h1><p class="sub">${esc(R.topic)}</p>
+  <div class="card"><h3>팀원 초대</h3><p class="sub sm">링크를 팀 카톡방에 올리면, 팀원은 로그인 없이 바로 참여해요.</p>
+    <div class="row sp" style="margin:10px 0"><span class="code" aria-label="초대 코드">${CODE}</span><button id="cp">초대 링크 복사</button></div>
+    ${navigator.share?'<button class="ghost" id="sh">공유하기…</button>':''}</div>
+  ${teamBox()}
+  <div class="card sm"><h3>진행 순서</h3><ol class="sub" style="margin:6px 0 0;padding-left:18px"><li>LINK IN: 각자 아이디어 ${R.per}장 쓰기. 다른 사람 내용은 안 보여요</li><li>LINK SYNC: 다수 의견, 소수 의견, 둘을 이은 융합 의견</li><li>LINK MATCH: 전공과 성향으로 역할 추천</li><li>LINK UP: 업무, 마감, 진행 상태</li></ol></div>`;
+  $('#cp').onclick=()=>copy(link); $('#sh')&&($('#sh').onclick=()=>navigator.share({title:'LINK 초대',text:`${R.name} 팀 프로젝트에 참여해 주세요`,url:link}).catch(()=>{}));
+  bar(isHost()?`<span class="msg">${members().length<2?'팀원이 2명 이상이면 시작할 수 있어요':'모두 들어왔다면 시작하세요'}</span><button class="pri" id="go" ${members().length<2?'disabled':''}>LINK IN 시작</button>`:`<span class="msg">진행자가 시작하면 자동으로 넘어가요</span>`);
+  $('#go')&&($('#go').onclick=()=>up({phase:'in',phaseAt:Date.now()}));
 }
 
-/* 유사도 묶기 (데모용: 글자 2-gram Jaccard). 실제 서비스는 LLM 임베딩 */
-function grams(t){ const s = t.replace(/[^\p{L}\p{N}]/gu,''); const g=new Set(); for(let i=0;i<s.length-1;i++) g.add(s.slice(i,i+2)); return g; }
-function sim(a,b){ const A=grams(a),B=grams(b); if(!A.size||!B.size) return 0; let x=0; A.forEach(g=>{if(B.has(g))x++;}); return x/(A.size+B.size-x); }
-function reveal(){
-  const id = S.session.id; let cards = [];
-  members().forEach(n => S.submissions[n].cards.forEach(c => cards.push({id:'c'+cards.length, idea:c.idea, reason:c.reason, author:n})));
-  cards = shuffle(cards, id);
-  // union-find
-  const p = cards.map((_,i)=>i), f = i => p[i]===i?i:(p[i]=f(p[i]));
-  for (let i=0;i<cards.length;i++) for (let j=i+1;j<cards.length;j++) if (sim(cards[i].idea, cards[j].idea) >= 0.2) p[f(i)] = f(j);
-  const gm = {}; cards.forEach((c,i)=>{ const r=f(i); (gm[r] = gm[r] || []).push(c.id); });
-  S.cards = cards;
-  S.groups = Object.values(gm).map((ids,k)=>({id:'g'+k, cardIds:ids}));
-  // 언더독 순서: 작은 묶음(드문 의견)부터
-  S.order = shuffle(S.groups.map(g=>g.id), id+'o').sort((a,b)=>grp(a).cardIds.length - grp(b).cardIds.length);
-  S.reviewIdx = 0; S.revealedAt = now();
-  log(`동시 공개: 카드 ${cards.length}장 → 묶음 ${S.groups.length}개`);
-  setPhase('review');
-}
-const grp = id => S.groups.find(g=>g.id===id);
-const card = id => S.cards.find(c=>c.id===id);
-const head = g => card(g.cardIds[0]);
-
-/* ---- SYNC 1: 언더독 리뷰 ---- */
-function hostReview(){
-  const gid = S.order[S.reviewIdx], g = grp(gid), c = head(g), names = members();
-  const ch = S.checks[gid] = S.checks[gid] || {};
-  const allChecked = names.every(n => (ch[n]||[]).length > 0);
-  const size = g.cardIds.length;
-  const others = S.order.filter(x=>x!==gid); const pick = others.length ? head(grp(others[(S.reviewIdx*7+3)%others.length])) : null;
+/* ---------- LINK IN ---------- */
+function viewIn(){
+  const mine=myCards(), all=Object.values(R.cards||{}), per=R.per, h=AI.hint(R,ui.hintI), done=mine.length>=per;
+  const cnt=u=>all.filter(c=>c.by===u).length, readyN=members().filter(([u])=>cnt(u)>=per).length;
   $('#app').innerHTML = `
-  <div class="row" style="justify-content:space-between"><span class="pill gray">LINK SYNC · 언더독 순서 (드문 의견부터)</span><span class="muted small">${S.reviewIdx+1} / ${S.order.length}</span></div>
-  <div class="gauge" style="margin:10px 0"><div style="width:${(S.reviewIdx)/S.order.length*100}%"></div></div>
-  <div class="card">
-    ${size===1?'<span class="pill warn">한 명만 낸 의견</span>':`<span class="pill">비슷한 의견 ${size}개</span>`}
-    <p class="big" style="margin-top:10px">${esc(c.idea)}</p>
-    <p class="muted">근거: ${esc(c.reason)||'—'}</p>
-    ${size>1?`<details><summary>원문 ${size}개 모두 보기 (요약·삭제하지 않아요)</summary>${g.cardIds.map(id=>`<div class="ideacard"><b>${esc(card(id).idea)}</b><br><span class="muted small">${esc(card(id).reason)}</span></div>`).join('')}</details>`:''}
-  </div>
-  ${pick?`<div class="card ai"><div class="who">AI 질문 (답은 주지 않아요)</div>이 카드와 「${esc(pick.idea)}」를 억지로라도 연결한다면 어떤 아이디어가 될까요?</div>`:''}
-  <div class="card">
-    <b>모두 체크를 남겨야 다음 카드가 열려요</b> <span class="muted small">(기명 · 복수 선택 · 가능성 먼저, 우려는 나중에)</span>
-    <table style="margin-top:8px"><tr><th>팀원</th>${CHECKS.map(k=>`<th>${k.label}</th>`).join('')}</tr>
-    ${names.map(n=>`<tr><td>${esc(n)}</td>${CHECKS.map((k,i)=>`<td><span class="chk ${(ch[n]||[]).includes(i)?'on':''}" data-n="${esc(n)}" data-k="${i}">${k.short}</span></td>`).join('')}</tr>`).join('')}
-    </table>
-  </div>
-  <div class="row" style="justify-content:space-between">
-    <button ${S.reviewIdx===0?'disabled':''} id="r-prev">← 이전</button>
-    <button class="primary" id="r-next" ${allChecked?'':'disabled'}>${S.reviewIdx===S.order.length-1?'회의 준비 화면으로':'다음 카드 →'}</button>
-  </div>`;
-  document.querySelectorAll('.chk[data-n]').forEach(el => el.onclick = () => {
-    const n = el.dataset.n, k = +el.dataset.k; const arr = ch[n] = ch[n] || [];
-    ch[n] = arr.includes(k) ? arr.filter(x=>x!==k) : [...arr, k]; save(); renderHost();
-  });
-  $('#r-prev').onclick = () => { S.reviewIdx--; save(); renderHost(); };
-  $('#r-next').onclick = () => { if (S.reviewIdx < S.order.length-1) { S.reviewIdx++; save(); renderHost(); } else { autoCandidates(); setPhase('prep'); } };
-}
-function tally(gid){ const t=[0,0,0,0,0]; Object.values(S.checks[gid]||{}).forEach(a=>a.forEach(k=>t[k]++)); return t; }
-function autoCandidates(){
-  const scored = S.order.map(g=>{ const t=tally(g); return {g, s:t[0]+t[1]+t[2]}; }).sort((a,b)=>b.s-a.s);
-  S.candidates = scored.slice(0, Math.min(3, scored.length)).map(x=>x.g);
+  <h1>${esc(R.topic)}</h1>
+  <p class="sub">다른 팀원의 아이디어와 작성자는 SYNC 전까지 보이지 않아요. 완성된 답이 아니어도 괜찮아요.</p>
+  <div class="card"><div class="row sp"><b>팀 진행 현황</b><span class="sm sub">카드 ${all.length}/${per*members().length}장, 다 쓴 사람 ${readyN}/${members().length}명</span></div>
+    <div class="gauge" style="margin:8px 0" role="progressbar" aria-valuemin="0" aria-valuemax="${per*members().length}" aria-valuenow="${all.length}"><i style="width:${Math.min(100,all.length/(per*members().length||1)*100)}%"></i></div>
+    <div class="who-list">${members().map(([u,m])=>`<span class="chip ${cnt(u)>=per?'ok':''}">${esc(m.name)} ${Math.min(cnt(u),per)}/${per}</span>`).join('')}</div></div>
+  <form class="card" id="fc" novalidate>
+    <div class="row sp"><h3>내 아이디어 카드 <span class="sub">${mine.length}/${per}</span></h3>${done?'<span class="chip ok">목표 달성</span>':''}</div>
+    <label for="ct">아이디어 한 줄</label><input id="ct" maxlength="120" value="${esc(ui.draft)}" placeholder="예: 기여도를 매주 자동으로 기록해 보여준다" autocomplete="off">
+    <label for="cw">근거 한 줄 <span class="xs sub">(선택)</span></label><input id="cw" maxlength="120" value="${esc(ui.why)}" placeholder="왜 그렇게 생각했나요?" autocomplete="off">
+    <button class="pri wide" style="margin-top:12px" type="submit">카드 추가</button>
+    ${mine.map(([id,c])=>`<div class="idea row sp"><div class="grow"><div class="t">${esc(c.text)}</div>${c.why?`<div class="w">${esc(c.why)}</div>`:''}</div><button type="button" class="ghost" data-del="${id}" aria-label="카드 삭제">삭제</button></div>`).join('')}
+  </form>
+  <section class="card ai" aria-label="AI 힌트">
+    <div class="who">막힐 때 볼 질문</div><p class="xs sub" style="margin:0 0 6px">${esc(h.tag)}에 맞춘 질문이에요. 답은 직접 써 주세요.</p>
+    <p style="font-weight:600">${esc(h.q)}</p>
+    <button type="button" class="ghost" id="nh">다른 질문 보기</button>
+  </section>
+  <section class="card ai" aria-label="꼬리 질문">
+    <div class="who">생각 파고들기 (5 Whys)</div>
+    ${ui.chain.map((s,i)=>`<div class="sm" style="margin:6px 0"><span class="sub">Q${i+1}. ${esc(s.q)}</span><br>${esc(s.a)}</div>`).join('')}
+    ${ui.chain.length<5?`<form id="fw" class="row" novalidate style="margin-top:8px"><label for="wa" style="margin:0;width:100%">Q${ui.chain.length+1}. ${esc(AI.why(ui.chain))}</label><input id="wa" class="grow" autocomplete="off" placeholder="떠오르는 대로 답해 보세요"><button type="submit">답하기</button></form>`
+      :`<p class="sm" style="margin-top:8px"><b>생각의 뿌리에 닿았어요.</b> 위 답들에서 카드 한 장을 직접 써 보세요.</p>`}
+    ${ui.chain.length?'<button type="button" class="ghost" id="wr">처음부터 다시</button>':''}
+  </section>`;
+  $('#ct').oninput=e=>{ui.draft=e.target.value;saveUi();}; $('#cw').oninput=e=>{ui.why=e.target.value;saveUi();};
+  $('#fc').onsubmit=async e=>{ e.preventDefault(); const t=ui.draft.trim(); if(!t){ toast('아이디어를 한 줄 적어 주세요'); $('#ct').focus(); return; }
+    const id='c'+rid(8,'abcdefghijkmnpqrstuvwxyz23456789'); ui.draft='';ui.why='';saveUi();
+    await up({[`cards.${id}`]:{text:t,why:$('#cw').value.trim(),by:ME,at:Date.now()}}); render(true); $('#ct')?.focus(); };
+  on('[data-del]','click',e=>up({[`cards.${e.currentTarget.dataset.del}`]:null}));
+  $('#nh').onclick=()=>{ui.hintI++;saveUi();render(true);};
+  $('#fw')&&($('#fw').onsubmit=e=>{ e.preventDefault(); const a=$('#wa').value.trim(); if(!a) return; ui.chain.push({q:AI.why(ui.chain),a}); saveUi(); render(true); $('#wa')?.focus(); });
+  $('#wr')&&($('#wr').onclick=()=>{ui.chain=[];saveUi();render(true);});
+  bar(isHost()?`<span class="msg">${readyN<members().length?`${members().length-readyN}명이 아직 작성 중이에요`:'모두 작성했어요'}</span><button class="pri" id="go" ${all.length<2?'disabled':''}>${readyN<members().length?'그래도 공개':'아이디어 공개하기'}</button>`
+    :`<span class="msg">${done?'다 썼어요! 진행자가 공개하면 넘어가요':'아이디어를 '+(per-mine.length)+'장 더 써 주세요'}</span>`);
+  $('#go')&&($('#go').onclick=e=>{ const b=e.currentTarget; if(readyN<members().length&&!b.dataset.ok){ b.dataset.ok=1; b.textContent='한 번 더 누르면 공개'; return; } up({phase:'sync',phaseAt:Date.now()}); });
 }
 
-/* ---- SYNC 2: 회의 준비 ---- */
-function hostPrep(){
-  const half = Math.max(1, Math.ceil(members().length/2));
-  const more = S.order.filter(g=>tally(g)[2] >= half);
-  const split = S.order.filter(g=>{ const t=tally(g); return (t[3]+t[4])>0 && (t[0]+t[1]+t[2])>0; });
-  const merge = S.order.filter(g=>tally(g)[1] > 0);
-  const item = g => `<li>${esc(head(grp(g)).idea)} <span class="muted small">(${tally(g).map((v,i)=>v?CHECKS[i].short+' '+v:'').filter(Boolean).join(' · ')})</span></li>`;
+/* ---------- LINK SYNC ---------- */
+function viewSync(){
+  const T=TYPES[R.type], an=AI.analyze(R), c=AI.comp(R), s=R.sync||{}, react=s.react||{}, score=s.score||{};
+  const cText = s.c ?? AI.fuse(an);
+  const evid = x => R.type==='research' ? (x.why&&x.why.length>=6?'<span class="chip ok">근거 있음</span>':'<span class="chip w">근거 필요</span>') : '';
+  const cands=[['A',an.seed?.text||''],...an.B.map(b=>[b.id,b.text]),...(cText?[['C',cText]]:[])].filter(x=>x[1]);
+  const tot=k=>Object.values(score[k]||{}).reduce((a,v)=>a+v.filter(Boolean).length,0);
+  const best=cands.slice().sort((a,b)=>tot(b[0])-tot(a[0]))[0];
   $('#app').innerHTML = `
-  <span class="pill gray">LINK SYNC · 회의 준비 화면</span>
-  <h1>회의는 쟁점부터 시작해요</h1>
-  <div class="grid2">
-    <div class="bucket"><b>작성자 설명 기회</b><p class="muted small">'더 듣고 싶다'가 절반 이상. 작성자가 원하면 1분 설명</p><ul>${more.map(item).join('')||'<li class="muted">없음</li>'}</ul></div>
-    <div class="bucket"><b>토론 쟁점</b><p class="muted small">가능성과 우려가 함께 체크됨</p><ul>${split.map(item).join('')||'<li class="muted">없음</li>'}</ul></div>
-    <div class="bucket"><b>연결 후보</b><p class="muted small">'합치면 좋겠다' 체크</p><ul>${merge.map(item).join('')||'<li class="muted">없음</li>'}</ul></div>
-    <div class="bucket"><b>빨간 펜에 올릴 후보</b><p class="muted small">기본: 가능성 체크가 많은 3개. 바꿀 수 있어요</p>
-      ${S.order.map(g=>`<label style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input type="checkbox" data-cand="${g}" ${S.candidates.includes(g)?'checked':''}> ${esc(head(grp(g)).idea)}</label>`).join('')}
-    </div>
-  </div>
-  <div class="row" style="justify-content:space-between;margin-top:16px"><button id="p-back">← 리뷰로</button><button class="primary" id="p-go">빨간 펜 시작 →</button></div>`;
-  document.querySelectorAll('[data-cand]').forEach(el => el.onchange = () => { const g = el.dataset.cand; S.candidates = el.checked ? [...new Set([...S.candidates,g])] : S.candidates.filter(x=>x!==g); save(); });
-  $('#p-back').onclick = () => { S.reviewIdx = S.order.length-1; setPhase('review'); };
-  $('#p-go').onclick = () => { if (!S.candidates.length) return toast('후보를 1개 이상 골라 주세요'); S.candidates = S.order.filter(g=>S.candidates.includes(g)); S.clashIdx = 0; setPhase('clash'); };
+  <h1>아이디어 ${an.cards.length}장이 공개됐어요</h1>
+  <p class="sub">작성자는 표시되지 않아요. ${T.name} 기준인 ${T.crit.join(', ')}으로 함께 살펴봐요.</p>
+  ${an.kw.length?`<div class="row" aria-label="공통 키워드"><span class="sm sub">공통 키워드</span>${an.kw.map(k=>`<span class="chip p">${esc(k)}</span>`).join('')}</div>`:''}
+  <div class="card ai"><div class="who">${c.kind==='same'?'동일 전공 팀':'융합 전공 팀'}이라면</div>
+    ${c.kind==='same'?`아이디어 유사도가 ${Math.round(an.avg*100)}%예요. 같은 전공의 익숙한 틀에서 나왔을 수 있으니 <b>소수 의견 B를 먼저</b> 이야기해 보세요.`
+      :`${c.majors.map(esc).join(', ')} 전공이 모였어요. 낯선 용어가 있는 카드는 작성자가 한 줄로 풀어 설명하고, 전공 사이의 접점을 찾아보세요.`}</div>
+  <section class="card sec"><div class="row sp"><h3><span class="k">A</span>다수 의견</h3><span class="sm sub">${an.A.length}장</span></div>
+    ${an.A.map(x=>`<div class="idea"><div class="t">${esc(x.text)}</div>${x.why?`<div class="w">${esc(x.why)}</div>`:''}${evid(x)}</div>`).join('')}</section>
+  <section class="card sec b"><h3><span class="k">B</span>소수 의견</h3><p class="sub sm" style="margin-top:0">적게 나왔지만 다른 방향을 보는 의견이에요.</p>
+    ${an.B.length?an.B.map(b=>{ const r=react[b.id]||{}, y=Object.values(r).filter(v=>v==='y').length, hh=Object.values(r).filter(v=>v==='h').length;
+      return `<div class="idea"><div class="t">${esc(b.text)}</div>${b.why?`<div class="w">${esc(b.why)}</div>`:''}${evid(b)}
+      <div class="sm" style="margin-top:8px;color:var(--warn)"><b>생각해 볼 질문</b> ${esc(AI.counter(b,an))}</div>
+      <div class="row" style="margin-top:8px"><button class="sm" data-rx="${b.id}" data-v="y" aria-pressed="${r[ME]==='y'}">반영해 보자 ${y||''}</button><button class="sm" data-rx="${b.id}" data-v="h" aria-pressed="${r[ME]==='h'}">보류 ${hh||''}</button></div></div>`; }).join(''):'<p class="sub sm">모든 아이디어가 비슷한 방향이에요.</p>'}</section>
+  <section class="card sec c"><div class="row sp"><h3><span class="k">C</span>융합 의견 제안</h3>${isHost()&&cText?'<button class="ghost" id="ce">다듬기</button>':''}</div>
+    ${cText?`<div class="idea"><div class="t" id="ctx">${esc(cText)}</div></div><p class="help">A와 B를 이어 본 참고안이에요. 최종 아이디어는 팀이 정해요.</p>`:'<p class="sub sm">소수 의견이 생기면 융합 의견을 제안해요.</p>'}</section>
+  <section class="card"><h3>후보 평가</h3><p class="sub sm">각 후보가 기준을 충족하면 눌러 주세요. 내 평가만 저장돼요.</p>
+    ${cands.map(([k,t])=>`<div class="idea"><div class="row sp"><span class="chip ${k==='A'?'p':k==='C'?'ok':'w'}">${k==='A'?'A':k==='C'?'C':'B'}</span><span class="xs sub">충족 ${tot(k)}표</span></div><div class="t" style="margin-top:6px">${esc(t)}</div>
+      <div class="crit">${T.crit.map((cr,i)=>`<button data-sc="${k}" data-i="${i}" aria-pressed="${!!(score[k]?.[ME]?.[i])}">${cr}</button>`).join('')}</div>
+      ${isHost()?`<button class="ghost" data-fin="${k}" style="margin-top:6px">이 안으로 최종 확정</button>`:''}</div>`).join('')}</section>
+  ${s.final?`<div class="card final"><h3>최종 아이디어</h3><p style="font-weight:700;font-size:17px;margin-top:4px">${esc(s.final.text)}</p></div>`:''}`;
+  on('[data-rx]','click',e=>{ const {rx,v}=e.currentTarget.dataset; up({[`sync.react.${rx}.${ME}`]: react[rx]?.[ME]===v?null:v}); });
+  on('[data-sc]','click',e=>{ const {sc,i}=e.currentTarget.dataset; const cur=(score[sc]?.[ME]||T.crit.map(()=>false)).slice(); cur[+i]=!cur[+i]; up({[`sync.score.${sc}.${ME}`]:cur}); });
+  on('[data-fin]','click',e=>{ const k=e.currentTarget.dataset.fin; up({'sync.final':{key:k,text:cands.find(x=>x[0]===k)[1]}}); toast('최종 아이디어로 확정했어요'); });
+  $('#ce')&&($('#ce').onclick=()=>{ $('#ctx').outerHTML=`<label for="cin" class="sr">융합 의견</label><textarea id="cin">${esc(cText)}</textarea><div class="row" style="margin-top:6px"><button class="pri" id="cs">저장</button></div>`; $('#cin').focus(); $('#cs').onclick=()=>{ up({'sync.c':$('#cin').value.trim()}); $('#cin').blur(); }; });
+  bar(isHost()?`<span class="msg">${s.final?'최종 아이디어를 정했어요':`지금 평가가 가장 높은 후보는 ${best?esc(best[0]):'-'}예요`}</span><button class="pri" id="go" ${s.final?'':'disabled'}>역할 정하기</button>`
+    :`<span class="msg">${s.final?'최종 아이디어가 확정됐어요':'후보를 평가해 주세요. 확정은 팀 논의 후 진행자가 해요'}</span>`);
+  $('#go')&&($('#go').onclick=()=>up({phase:'match',phaseAt:Date.now(),'match.assign':AI.recommend(R)}));
 }
 
-/* ---- SYNC 3: AI 빨간 펜 ---- */
-function hostClash(){
-  const gid = S.candidates[S.clashIdx], c = head(grp(gid));
-  const k = S.clash[gid] = S.clash[gid] || {crit: S.clashIdx % REDPEN.length, original: c.idea, text: c.idea, agree:0, rebut:0, memo:'', outcome:null};
-  const rp = REDPEN[k.crit];
+/* ---------- LINK MATCH ---------- */
+function viewMatch(){
+  const T=TYPES[R.type], as=R.match?.assign||{}, ack=R.match?.ack||{};
+  const load=u=>T.roles.filter(r=>as[r[0]]===u).reduce((a,r)=>a+r[1],0);
+  const myRoles=T.roles.filter(r=>as[r[0]]===ME);
   $('#app').innerHTML = `
-  <div class="row" style="justify-content:space-between"><span class="pill gray">LINK SYNC · AI 빨간 펜</span><span class="muted small">후보 ${S.clashIdx+1} / ${S.candidates.length}</span></div>
-  <div class="card"><p class="big">${esc(k.text)}</p><p class="muted">근거: ${esc(c.reason)||'—'}</p></div>
-  <div class="card ai"><div class="who">AI 빨간 펜 · ${rp.crit} 검증 (대안은 제시하지 않아요)</div>${esc(rp.q(k.text))}</div>
-  <div class="card">
-    <b>팀의 응답</b> <span class="muted small">(익명으로 손을 들어 세어 주세요. 반대를 AI가 먼저 꺼냈으니 관계 갈등 없이 과업 갈등만 남아요)</span>
-    <div class="row" style="margin:10px 0">
-      <span>반론에 동의</span><button data-a="agree" data-d="-1">−</button><b>${k.agree}</b><button data-a="agree" data-d="1">+</button>
-      <span style="margin-left:16px">재반박</span><button data-a="rebut" data-d="-1">−</button><b>${k.rebut}</b><button data-a="rebut" data-d="1">+</button>
-    </div>
-    <label>재반박 메모</label><textarea id="c-memo" placeholder="반론에 대한 팀의 답을 적어 주세요">${esc(k.memo)}</textarea>
-    <label>아이디어 수정 (반론을 반영해 고쳤다면)</label><input type="text" id="c-text" value="${esc(k.text)}">
-    <div class="row" style="margin-top:12px">
-      ${[['pass','통과','good'],['revised','수정 후 통과','warn'],['drop','탈락','bad']].map(([v,l,cl])=>`<button class="${k.outcome===v?'primary':''}" data-o="${v}">${l}</button>`).join('')}
-    </div>
-  </div>
-  <div class="row" style="justify-content:space-between"><button id="c-prev" ${S.clashIdx===0?'disabled':''}>← 이전</button><button class="primary" id="c-next" ${k.outcome?'':'disabled'}>${S.clashIdx===S.candidates.length-1?'최종 투표 →':'다음 후보 →'}</button></div>`;
-  document.querySelectorAll('[data-a]').forEach(b => b.onclick = () => { k[b.dataset.a] = Math.max(0, k[b.dataset.a] + (+b.dataset.d)); keep(); renderHost(); });
-  const keep = () => { k.memo = $('#c-memo').value; const t = $('#c-text').value.trim(); if (t) k.text = t; save(); };
-  $('#c-memo').oninput = keep; $('#c-text').oninput = keep;
-  document.querySelectorAll('[data-o]').forEach(b => b.onclick = () => { keep(); k.outcome = b.dataset.o; if (k.text !== k.original && k.outcome==='pass') k.outcome='revised'; log(`빨간 펜: ${k.original} → ${k.outcome}`); save(); renderHost(); });
-  $('#c-prev').onclick = () => { keep(); S.clashIdx--; save(); renderHost(); };
-  $('#c-next').onclick = () => { keep(); if (S.clashIdx < S.candidates.length-1) { S.clashIdx++; save(); renderHost(); } else setPhase('vote'); };
+  <h1>전공, 역량, 성향을 보고 역할을 나눠 봤어요</h1>
+  <p class="sub">업무 개수가 아니라 예상 소요 시간으로 균형을 맞췄어요. 추천은 제안일 뿐, 최종 역할은 팀이 정해요.</p>
+  ${myRoles.length?`<div class="card final"><p class="sm sub" style="margin:0">내 추천 역할</p><h2 style="margin:2px 0 4px">${myRoles.map(r=>esc(r[0])).join(', ')}</h2>
+    <p class="sub sm">이유: ${myRoles.map(r=>AI.reason(R.members[ME],r)).join(' / ')}</p>
+    <button class="${ack[ME]?'':'pri'}" id="ak">${ack[ME]?'수락했어요':'이 역할 수락하기'}</button></div>`:''}
+  <div class="card"><table><thead><tr><th>역할</th><th>예상 시간</th><th>담당</th></tr></thead><tbody>
+  ${T.roles.map(r=>`<tr><td><b>${esc(r[0])}</b><div class="xs sub">${esc(r[2])} 성향과 잘 맞아요</div></td><td>${r[1]}시간</td>
+    <td>${isHost()?`<label class="sr" for="as${esc(r[0])}">${esc(r[0])} 담당</label><select id="as${esc(r[0])}" data-as="${esc(r[0])}">${members().map(([u,m])=>`<option value="${u}" ${as[r[0]]===u?'selected':''}>${esc(m.name)}</option>`).join('')}</select>`
+      :`<div class="row">${av(as[r[0]])}${esc(mName(as[r[0]]))}</div>`}
+      ${as[r[0]]?`<div class="xs sub" style="margin-top:4px">${AI.reason(R.members[as[r[0]]]||{},r)}${ack[as[r[0]]]?', 수락함':''}</div>`:''}</td></tr>`).join('')}
+  </tbody></table></div>
+  <div class="card"><h3>팀원별 업무량</h3>${members().map(([u,m])=>{ const l=load(u), mx=Math.max(...members().map(([x])=>load(x)),1);
+    return `<div class="row" style="margin:8px 0">${av(u)}<span style="width:64px" class="sm">${esc(m.name)}</span><div class="gauge grow"><i style="width:${l/mx*100}%"></i></div><span class="sm sub" style="width:52px;text-align:right">${l}시간</span></div>`; }).join('')}</div>`;
+  $('#ak')&&($('#ak').onclick=()=>up({[`match.ack.${ME}`]:!ack[ME]}));
+  on('[data-as]','change',e=>up({[`match.assign.${e.target.dataset.as}`]:e.target.value}));
+  const ackN=members().filter(([u])=>ack[u]||!T.roles.some(r=>as[r[0]]===u)).length;
+  bar(isHost()?`<button id="re">다시 추천</button><span class="msg">${ackN}/${members().length}명 수락</span><button class="pri" id="go">실행 계획 만들기</button>`:`<span class="msg">진행자가 역할을 확정하면 실행 계획이 만들어져요</span>`);
+  $('#re')&&($('#re').onclick=()=>up({'match.assign':AI.recommend(R),'match.ack':{}}));
+  $('#go')&&($('#go').onclick=()=>up({phase:'up',phaseAt:Date.now(),tasks:AI.plan(R)}));
 }
 
-/* ---- SYNC 4: 투표 + 쏠림 경보 ---- */
-function hostVote(){
-  const names = members(), V = S.session.votes;
-  const alive = S.candidates.filter(g => S.clash[g] && S.clash[g].outcome !== 'drop');
-  if (!alive.length) { $('#app').innerHTML = `<div class="card">모든 후보가 탈락했어요. 회의 준비 화면에서 후보를 다시 골라 주세요.</div><button onclick="setPhase('prep')">← 회의 준비로</button>`; return; }
-  const used = n => alive.reduce((a,g)=>a+((S.votes[g]||{})[n]||0),0);
-  const tot = g => Object.values(S.votes[g]||{}).reduce((a,b)=>a+b,0);
-  const all = alive.reduce((a,g)=>a+tot(g),0);
-  const top = alive.slice().sort((a,b)=>tot(b)-tot(a))[0], low = alive.slice().sort((a,b)=>tot(a)-tot(b))[0];
-  const skew = all>0 && alive.length>1 && tot(top)/all >= 0.7;
-  if (skew && !S.advocateLogged) { S.advocateLogged = true; log('쏠림 경보 발생'); save(); }
+/* ---------- LINK UP ---------- */
+const ST=['할 일','진행 중','완료'];
+function viewUp(){
+  const T=TYPES[R.type], tasks=Object.entries(R.tasks||{}).sort((a,b)=>(a[1].due||'').localeCompare(b[1].due||'')||a[1].i-b[1].i);
+  const done=tasks.filter(([,t])=>t.status===2).length, pct=tasks.length?Math.round(done/tasks.length*100):0;
+  const mine=tasks.filter(([,t])=>t.who===ME&&t.status!==2);
+  const dleft = R.deadline ? Math.ceil((new Date(R.deadline)-new Date(today()))/864e5) : null;
   $('#app').innerHTML = `
-  <span class="pill gray">LINK SYNC · 최종 투표</span>
-  <h1>재반박을 통과한 아이디어만 올라왔어요</h1>
-  <p class="muted">1인 ${V}표. 최종 선택은 사람이 과제 평가 기준으로 해요.</p>
-  <div class="card"><table><tr><th>아이디어</th>${names.map(n=>`<th>${esc(n)} <span class="muted">(${V-used(n)})</span></th>`).join('')}<th>합계</th></tr>
-  ${alive.map(g=>`<tr><td>${esc(S.clash[g].text)}<div class="bar-h" style="width:${all?tot(g)/all*100:0}%;margin-top:6px"></div></td>${names.map(n=>`<td><span class="chk" data-v="${g}" data-n="${esc(n)}" data-d="1">+</span> <b>${(S.votes[g]||{})[n]||0}</b> <span class="chk" data-v="${g}" data-n="${esc(n)}" data-d="-1">−</span></td>`).join('')}<td><b>${tot(g)}</b></td></tr>`).join('')}
-  </table></div>
-  ${skew?`<div class="card ai"><div class="who">AI 악마의 대변인 · 한 의견에 ${Math.round(tot(top)/all*100)}% 쏠림</div>가장 적은 표를 받은 「${esc(S.clash[low].text)}」에도 타당한 근거가 있다면 무엇일까요? 결정 전에 1분만 들어 봐요.
-    <div class="row" style="margin-top:8px"><button id="v-heard" ${S.advocateSeen?'disabled':''}>${S.advocateSeen?'들었어요 ✓':'1분 들었어요'}</button></div></div>`:''}
-  <div class="card"><b>최종안 결정</b><div class="row" style="margin-top:8px">${alive.map(g=>`<button class="${S.final===g?'primary':''}" data-f="${g}">${esc(S.clash[g].text)}</button>`).join('')}</div></div>
-  <div class="row" style="justify-content:space-between"><button id="v-back">← 빨간 펜으로</button><button class="primary" id="v-next" ${S.final && (!skew || S.advocateSeen)?'':'disabled'}>역할 정하기 →</button></div>
-  ${skew && !S.advocateSeen?'<p class="small muted" style="text-align:right">쏠림 경보에 1분 응답해야 넘어갈 수 있어요</p>':''}`;
-  document.querySelectorAll('[data-v]').forEach(el => el.onclick = () => {
-    const g=el.dataset.v, n=el.dataset.n, d=+el.dataset.d; S.votes[g] = S.votes[g]||{}; const cur = S.votes[g][n]||0;
-    if (d>0 && used(n)>=V) return toast(`${n}님은 표를 다 썼어요`);
-    S.votes[g][n] = Math.max(0, cur+d); S.advocateSeen = false; save(); renderHost();
-  });
-  if ($('#v-heard')) $('#v-heard').onclick = () => { S.advocateSeen = true; log('악마의 대변인 1분 청취'); save(); renderHost(); };
-  document.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { S.final = b.dataset.f; log('최종안 결정'); save(); renderHost(); });
-  $('#v-back').onclick = () => { S.clashIdx = S.candidates.length-1; setPhase('clash'); };
-  $('#v-next').onclick = () => { suggestRoles(); setPhase('match'); };
+  <h1>${esc(R.sync?.final?.text||R.topic)}</h1>
+  <div class="card"><div class="row sp"><b>전체 진행률 ${pct}%</b><span class="sm sub">${done}/${tasks.length}개 완료${dleft!=null?`, 마감까지 ${dleft>=0?dleft+'일':'지남'}`:''}</span></div>
+    <div class="gauge" style="margin-top:8px" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div></div>
+  ${mine.length?`<div class="card final"><h3>내 할 일 ${mine.length}개</h3>${mine.map(([,t])=>`<div class="sm" style="margin-top:6px">${esc(t.title)} <span class="sub">${md(t.due)}까지</span></div>`).join('')}</div>`:''}
+  <div class="card" style="padding:8px 12px"><table><thead><tr><th>업무</th><th>담당</th><th>마감</th><th>상태</th></tr></thead><tbody>
+  ${tasks.map(([id,t])=>`<tr><td><b class="sm">${esc(t.title)}</b>${t.role?`<div class="xs sub">${esc(t.role)}</div>`:''}</td>
+    <td><label class="sr" for="w${id}">담당</label><select id="w${id}" data-who="${id}" style="min-height:36px;padding:6px;font-size:13px;min-width:84px"><option value="">미배정</option>${members().map(([u,m])=>`<option value="${u}" ${t.who===u?'selected':''}>${esc(m.name)}</option>`).join('')}</select></td>
+    <td class="sm" style="white-space:nowrap">${t.due?md(t.due):'-'}</td>
+    <td><button class="status s${t.status}" data-st="${id}" aria-label="${esc(t.title)} 상태: ${ST[t.status]}. 눌러서 변경">${ST[t.status]}</button></td></tr>`).join('')}
+  </tbody></table>
+  <form id="fa" class="row" style="margin:10px 0 4px" novalidate><label for="na" class="sr">업무 추가</label><input id="na" class="grow" placeholder="업무 추가" autocomplete="off"><input id="nd" type="date" style="width:auto" value="${R.deadline||addDays(today(),7)}" aria-label="마감일"><button type="submit">추가</button></form></div>
+  <div class="card"><h3>팀원별 진행</h3>${members().map(([u,m])=>{ const my=tasks.filter(([,t])=>t.who===u), d=my.filter(([,t])=>t.status===2).length;
+    return `<div class="row" style="margin:8px 0">${av(u)}<span style="width:64px" class="sm">${esc(m.name)}</span><div class="gauge grow"><i style="width:${my.length?d/my.length*100:0}%"></i></div><span class="sm sub" style="width:44px;text-align:right">${d}/${my.length}</span></div>`; }).join('')}</div>`;
+  on('[data-st]','click',e=>{ const id=e.currentTarget.dataset.st; up({[`tasks.${id}.status`]:((R.tasks[id].status||0)+1)%3}); });
+  on('[data-who]','change',e=>up({[`tasks.${e.target.dataset.who}.who`]:e.target.value}));
+  $('#fa').onsubmit=e=>{ e.preventDefault(); const t=$('#na').value.trim(); if(!t) return $('#na').focus(); up({[`tasks.t${rid(6,'abcdefghijkmnpqrstuvwxyz23456789')}`]:{title:t,role:'',who:'',due:$('#nd').value,status:0,i:99}}); $('#na').value=''; $('#na').blur(); };
+  bar(`<span class="msg">${pct===100?'모든 업무를 마쳤어요':'상태를 누를 때마다 할 일, 진행 중, 완료 순으로 바뀌어요'}</span>${isHost()?'<button id="bk">아이디어 다시 보기</button>':''}`);
+  $('#bk')&&($('#bk').onclick=e=>{ const b=e.currentTarget; if(!b.dataset.ok){ b.dataset.ok=1; b.textContent='한 번 더 누르면 이동'; return; } up({phase:'sync'}); });
 }
 
-/* ---- MATCH: 역할 ---- */
-function suggestRoles(){
-  const names = members(), roles = S.session.roles, load = Object.fromEntries(names.map(n=>[n,0])), out = {};
-  const want = r => names.filter(n => (S.submissions[n].roles||[]).includes(r));
-  roles.slice().sort((a,b)=>want(a).length-want(b).length).forEach(r => {
-    const pool = want(r).length ? want(r) : names;
-    const pick = pool.slice().sort((a,b)=>load[a]-load[b])[0];
-    out[r] = pick; load[pick]++;
-  });
-  S.assign = out;
-}
-function hostMatch(){
-  const names = members(), roles = S.session.roles;
-  const loads = Object.fromEntries(names.map(n=>[n, roles.filter(r=>S.assign[r]===n).length]));
-  const unhappy = roles.filter(r => S.assign[r] && !(S.submissions[S.assign[r]].roles||[]).includes(r));
-  $('#app').innerHTML = `
-  <span class="pill gray">LINK MATCH · 블라인드 희망 역할</span>
-  <h1>최종안: ${esc(S.clash[S.final].text)}</h1>
-  <div class="card">
-    <b>희망 역할</b> <span class="muted small">(IN 단계에서 각자 몰래 고른 것 · 눈치 보며 남는 역할을 떠안지 않도록)</span>
-    ${S.rolesRevealed ? `<table style="margin-top:8px"><tr><th>팀원</th>${roles.map(r=>`<th>${esc(r)}</th>`).join('')}</tr>${names.map(n=>`<tr><td>${esc(n)}</td>${roles.map(r=>`<td>${(S.submissions[n].roles||[]).includes(r)?'●':''}</td>`).join('')}</tr>`).join('')}</table>`
-      : `<div class="row" style="margin-top:8px"><button class="primary" id="m-reveal">희망 역할 동시 공개</button></div>`}
-  </div>
-  ${S.rolesRevealed ? `
-  <div class="card ai"><div class="who">AI 추천 (확정은 팀이)</div>희망을 최대한 반영하고, 한 사람에게 몰리지 않게 나눴어요.${unhappy.length?` 「${unhappy.map(esc).join(', ')}」는 지원자가 없어 부담이 적은 사람에게 배정했어요.`:''}</div>
-  <div class="card"><table><tr><th>역할</th><th>담당</th></tr>${roles.map(r=>`<tr><td>${esc(r)}</td><td><select data-r="${esc(r)}">${names.map(n=>`<option ${S.assign[r]===n?'selected':''}>${esc(n)}</option>`).join('')}</select></td></tr>`).join('')}</table>
-  <p class="small muted" style="margin-top:8px">1인당 역할 수: ${names.map(n=>`${esc(n)} ${loads[n]}`).join(' · ')}</p></div>
-  <div class="row" style="justify-content:flex-end"><button class="primary" id="m-next">기여 기록 리포트 만들기 →</button></div>`:''}`;
-  if ($('#m-reveal')) $('#m-reveal').onclick = () => { S.rolesRevealed = true; log('희망 역할 공개'); save(); renderHost(); };
-  document.querySelectorAll('[data-r]').forEach(el => el.onchange = () => { S.assign[el.dataset.r] = el.value; save(); renderHost(); });
-  if ($('#m-next')) $('#m-next').onclick = () => { S.endedAt = now(); log('회의 종료'); setPhase('report'); };
+/* ---------- 시뮬레이션 (기획서 5장: 동일 전공 vs 융합 전공) ---------- */
+async function demo(kind){
+  const topic='대학생 팀플 무임승차를 줄이는 서비스 기획', code='D'+rid(5);
+  const ppl = kind==='same'
+    ? [['김민지','경영학과','마케팅, 설문','아이디어형',['콘셉트 기획']],['박서준','경영학과','엑셀, 자료조사','정리형',['타깃 리서치']],['이하윤','경영학과','발표, PPT','발표형',['피칭·발표']]]
+    : [['김동현','법학과','자료조사, 글쓰기','정리형',['실행 전략']],['정종엽','사회복지상담학과','인터뷰, 상담','발표형',['타깃 리서치','피칭·발표']],['남예원','화학과','실험설계, 디자인','실행형',['시각 자료 제작']]];
+  const cards = kind==='same'
+    ? [['기여도를 점수로 매겨 성적에 반영한다','점수가 있어야 움직인다'],['팀원끼리 기여도 점수를 매기는 상호평가','교수님이 다 볼 수 없다'],['기여도 점수를 매주 공개한다','늦게 알면 바로잡을 수 없다'],['역할별 기여 점수를 자동 계산한다','공정한 기준이 필요하다'],['상호평가 점수를 익명으로 매긴다','눈치 보지 않게'],['무임승차한 팀원을 교수님께 신고하는 기능','최후의 수단'],['첫 회의에서 각자 하기 싫은 일을 먼저 말하게 한다','싫은 일이 빈칸으로 남는다'],['기여도 점수를 성적 일부로 반영한다','동기 부여'],['기여 점수가 낮으면 알림을 준다','']]
+    : [['팀원이 서로 기여를 증언하는 상호평가 기록','법적 분쟁도 증거가 핵심이다'],['무임승차 원인을 면담으로 먼저 듣는 상담 단계','게으름이 아니라 사정일 수 있다'],['실험 노트처럼 작업 과정을 날짜별로 남긴다','과정이 남아야 기여가 보인다'],['역할별 기여를 점수화해 공개한다','투명하면 줄어든다'],['처음에 팀 규칙을 계약서처럼 서명한다','약속이 있어야 책임이 생긴다'],['참여가 적은 팀원에게 작은 일부터 맡긴다','진입 장벽을 낮춘다'],['기여 기록을 교수에게 제출하는 기능','평가 근거가 된다'],['팀원 상태를 체크하는 익명 기분 설문','소진을 미리 알 수 있다'],['작업 과정을 사진으로 기록해 공유','']];
+  const t0=Date.now(), M={}, C={};
+  ppl.forEach(([name,major,skills,trait,wants],i)=>{ const u='demo'+i; M[u]={name,major,skills,trait,wants,scores:{[trait]:3},joinedAt:t0+i};
+    cards.slice(i*3,i*3+3).forEach(([text,why],j)=>C['c'+i+j]={text,why,by:u,at:t0+i*10+j}); });
+  M[ME]={name:'나',major:kind==='same'?'경영학과':'AI융합학부',skills:'기획, 개발',trait:'아이디어형',wants:['콘셉트 기획'],scores:{},joinedAt:t0+9};
+  await Local.create(code,{v:2,name:kind==='same'?'시뮬레이션: 동일 전공 팀':'시뮬레이션: 융합 전공 팀',topic,type:'plan',deadline:addDays(today(),14),per:3,hostId:ME,createdAt:t0,phase:'in',phaseAt:t0,members:M,cards:C});
+  go(code,true);
 }
 
-/* ---- UP: 리포트 ---- */
-function reportData(){
-  const names = members(), G = S.order.length, s = S.session;
-  const fin = S.clash[S.final], finG = grp(S.final);
-  const minority = S.order.filter(g=>grp(g).cardIds.length===1);
-  const contrib = names.map(n => ({
-    name:n, cards:S.submissions[n].cards.length,
-    checked: S.order.filter(g => ((S.checks[g]||{})[n]||[]).length>0).length,
-    votes: S.candidates.reduce((a,g)=>a+((S.votes[g]||{})[n]||0),0),
-    roles: s.roles.filter(r=>S.assign[r]===n)
-  }));
-  const aiQ = S.order.length, aiR = Object.keys(S.clash).length;
-  return {names, G, s, fin, finG, minority, contrib, aiQ, aiR, total:S.cards.length,
-    finalFromMinority: finG.cardIds.length===1, mins: Math.round(((S.endedAt||now()) - (S.revealedAt||s.createdAt))/60000)};
-}
-function hostReport(){
-  const d = reportData(), s = d.s;
-  $('#app').innerHTML = `
-  <div class="noprint row" style="justify-content:space-between"><span class="pill gray">LINK UP · 생각 출처 & 기여 기록</span>
-    <div class="row"><button id="u-md">Notion용 마크다운 복사</button><button id="u-print">PDF로 저장 (교수자 제출용)</button><button id="u-json">백업</button></div></div>
-  <div class="card">
-    <h1>회의 리포트</h1>
-    <p class="muted">${esc(s.topic)}<br>${new Date(s.createdAt).toLocaleDateString('ko-KR')} · 참여 ${d.names.length}명 · 공개 후 회의 ${d.mins}분</p>
-    <div class="grid2" style="margin-top:12px">
-      <div class="bucket"><span class="muted small">모인 아이디어 (팝콘 모델: 헤어지기 전 공유)</span><div class="big">${d.total}개 · 묶음 ${d.G}개</div></div>
-      <div class="bucket"><span class="muted small">한 명만 낸 소수 의견</span><div class="big">${d.minority.length}개 ${d.finalFromMinority?'<span class="pill good">최종안이 소수 의견에서 나옴</span>':''}</div></div>
-    </div>
-    <h2>최종안</h2>
-    <p class="big">${esc(d.fin.text)}</p>
-    ${d.fin.text!==d.fin.original?`<p class="muted small">진화: 「${esc(d.fin.original)}」 → AI 반론(${REDPEN[d.fin.crit].crit}) → 팀 재반박 → 「${esc(d.fin.text)}」</p>`:''}
-    <h2>생각의 출처</h2>
-    <p>최종안은 <b>팀원의 카드</b>에서 출발했어요. AI는 질문 ${d.aiQ}번, 반론 ${d.aiR}번만 했고 아이디어를 직접 만들지 않았어요.</p>
-    <h2>빨간 펜 기록</h2>
-    <table><tr><th>아이디어</th><th>검증 기준</th><th>동의 / 재반박</th><th>결과</th><th>메모</th></tr>
-    ${S.candidates.map(g=>{const k=S.clash[g]; if(!k) return ''; return `<tr><td>${esc(k.text)}</td><td>${REDPEN[k.crit].crit}</td><td>${k.agree} / ${k.rebut}</td><td>${({pass:'통과',revised:'수정 후 통과',drop:'탈락'})[k.outcome]||'-'}</td><td>${esc(k.memo)}</td></tr>`;}).join('')}</table>
-    <h2>기여 기록</h2>
-    <p class="muted small">말이 아니라 기록으로 남는 참여예요. 회의에서 조용했던 팀원의 기여도 보여요.</p>
-    <table><tr><th>팀원</th><th>낸 아이디어</th><th>검토 참여</th><th>투표</th><th>맡은 역할</th></tr>
-    ${d.contrib.map(c=>`<tr><td>${esc(c.name)}</td><td>${c.cards}장</td><td>${c.checked} / ${d.G} 묶음</td><td>${c.votes}표</td><td>${c.roles.map(esc).join(', ')||'-'}</td></tr>`).join('')}</table>
-    <h2>다음 세션으로</h2>
-    <p class="muted">회의 후 떠오른 생각은 다음 세션의 LINK IN 카드로 내 주세요. (강의: 팝콘 모델)</p>
-  </div>
-  <div class="row noprint"><button onclick="go('new')">새 세션 만들기</button></div>`;
-  $('#u-md').onclick = () => copy(reportMd());
-  $('#u-print').onclick = () => window.print();
-  $('#u-json').onclick = () => { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)],{type:'application/json'})); a.download=`link-${s.id}.json`; a.click(); };
-}
-function reportMd(){
-  const d = reportData(), s = d.s;
-  return [`# LINK 회의 리포트`, ``, `- 주제: ${s.topic}`, `- 날짜: ${new Date(s.createdAt).toLocaleDateString('ko-KR')} · 참여 ${d.names.length}명`, `- 모인 아이디어: ${d.total}개 (묶음 ${d.G}개, 소수 의견 ${d.minority.length}개)`, ``,
-    `## 최종안`, d.fin.text, d.fin.text!==d.fin.original?`\n진화: ${d.fin.original} → ${d.fin.text}`:'', ``,
-    `## 생각의 출처`, `최종안은 팀원 카드에서 출발. AI는 질문 ${d.aiQ}회, 반론 ${d.aiR}회만 제시.`, ``,
-    `## 빨간 펜 기록`, `| 아이디어 | 기준 | 동의/재반박 | 결과 | 메모 |`, `| --- | --- | --- | --- | --- |`,
-    ...S.candidates.filter(g=>S.clash[g]).map(g=>{const k=S.clash[g]; return `| ${k.text} | ${REDPEN[k.crit].crit} | ${k.agree}/${k.rebut} | ${({pass:'통과',revised:'수정 후 통과',drop:'탈락'})[k.outcome]||'-'} | ${k.memo.replace(/\n/g,' ')} |`;}), ``,
-    `## 기여 기록`, `| 팀원 | 아이디어 | 검토 참여 | 투표 | 역할 |`, `| --- | --- | --- | --- | --- |`,
-    ...d.contrib.map(c=>`| ${c.name} | ${c.cards}장 | ${c.checked}/${d.G} | ${c.votes} | ${c.roles.join(', ')||'-'} |`)].join('\n');
-}
-
-/* ===================== 데모 ===================== */
-function startDemo(){
-  const session = {id:'demo'+rid(3), topic:'어떻게 하면 우리 팀 발표를 평가팀이 끝까지 듣게 만들 수 있을까?', members:5, minutes:10, minCards:2, votes:2,
-    roles:['자료조사','PPT 디자인','발표','보고서 작성','일정관리'], createdAt:now()};
-  session.deadline = session.createdAt + 10*60000;
-  S = newState(session);
-  const D = {
-    '민지':{c:[['첫 장에 우리 팀이 직접 겪은 팀플 장면을 넣는다','평가팀도 같은 경험이 있어 첫 10초에 공감한다'],['발표 중간에 평가팀에게 LINK를 직접 써 보게 한다','직접 해 본 기능은 기억에 남는다']], r:['발표','PPT 디자인']},
-    '서준':{c:[['우리 팀이 실제로 LINK로 회의한 결과를 보여준다','써 봤다는 증거가 가장 강한 근거다'],['경쟁 서비스 Parabol과 한 장으로 비교한다','차별점이 한눈에 보인다']], r:['자료조사']},
-    '하윤':{c:[['팀플 장면을 첫 장에 넣고 공감을 얻는다','공감이 먼저 와야 설명이 들린다'],['수강생 설문으로 무임승차 고민 비율을 보여준다','숫자가 있으면 수요가 증명된다']], r:['자료조사','보고서 작성']},
-    '도윤':{c:[['발표를 질문으로 시작한다','질문을 받으면 청중이 스스로 생각한다'],['우리 팀 실제 회의 결과를 리포트 화면으로 보여준다','실제 사용 기록이 설득력이 있다']], r:['일정관리']},
-    '지아':{c:[['교수님 입장에서 기여 기록이 왜 필요한지 보여준다','돈을 내는 사람은 학생이 아니라 학교일 수 있다'],['발표를 15분 대신 7분으로 끝내고 질의를 늘린다','짧을수록 끝까지 듣는다']], r:['PPT 디자인','발표']}
-  };
-  Object.entries(D).forEach(([n,v]) => S.submissions[n] = {cards:v.c.map(([idea,reason])=>({idea,reason})), roles:v.r, at:now()});
-  log('데모 세션 생성'); save(); go('host='+session.id); toast('데모 팀원 5명의 제출 코드를 받아 둔 상태예요');
-}
-
-route();
+/* ================== 시작 ================== */
+if(CODE){ unsub=db().subscribe(CODE, d=>{ const ph=R?.phase; R=d; render(ph!==d?.phase); }); setTimeout(()=>{ if(R===null && $('#app').textContent.includes('불러오는')) render(true); },10000); }
+else render(true);
 </script>
 </body>
 </html>
