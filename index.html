@@ -252,7 +252,7 @@ function viewHome(){
   <section class="hero">
     <h1>생각은 자유롭게,<br>협업은 유기적으로.</h1>
   </section>
-  ${(ls.get('link.recent')||[]).length?`<section class="card"><h3>이 기기에서 참여한 프로젝트</h3>${(ls.get('link.recent')||[]).map(x=>`<div class="row sp" style="padding:8px 0;border-top:1px solid #EEF1F0"><span class="grow"><b>${esc(x.name)}</b> <span class="sm sub">${esc(x.code)}</span></span><a href="?r=${esc(x.code)}${x.local?'&local=1':''}"><button>열기</button></a></div>`).join('')}</section>`:''}
+  ${recent().length?`<section class="card"><h3>이 기기에서 참여한 프로젝트</h3>${recent().map(x=>`<div class="row sp" style="padding:8px 0;border-top:1px solid #EEF1F0"><span class="grow"><b>${esc(x.name)}</b> <span class="sm sub">${esc(x.code)}</span></span><a href="?r=${esc(x.code)}${x.local?'&local=1':''}"><button>열기</button></a></div>`).join('')}</section>`:''}
   <form class="card" id="fNew" novalidate>
     <h2 style="margin-top:0">새 프로젝트 만들기</h2>
     <label for="nName">프로젝트 이름</label><input id="nName" required placeholder="예: 창의적기획과문제해결 2조" autocomplete="off">
@@ -490,12 +490,13 @@ async function demo(kind){
   ppl.forEach(([name,major,skills,trait,wants],i)=>{ const u='demo'+i; M[u]={name,major,skills,trait,wants,scores:{[trait]:3},joinedAt:t0+i};
     cards.slice(i*3,i*3+3).forEach(([text,why],j)=>C['c'+i+j]={text,why,by:u,at:t0+i*10+j}); });
   M[ME]={name:'나',major:kind==='same'?'경영학과':'AI융합학부',skills:'기획, 개발',trait:'아이디어형',wants:['콘셉트 기획'],scores:{},joinedAt:t0+9};
-  await Local.create(code,{v:2,name:kind==='same'?'시뮬레이션: 동일 전공 팀':'시뮬레이션: 융합 전공 팀',topic,type:'plan',deadline:addDays(today(),14),per:3,hostId:ME,createdAt:t0,phase:'in',phaseAt:t0,members:M,cards:C});
+  await Local.create(code,{v:2,sim:true,name:kind==='same'?'시뮬레이션: 동일 전공 팀':'시뮬레이션: 융합 전공 팀',topic,type:'plan',deadline:addDays(today(),14),per:3,hostId:ME,createdAt:t0,phase:'in',phaseAt:t0,members:M,cards:C});
   go(code,true);
 }
 
 /* ================== 시작 ================== */
-const remember = () => { if(!R?.members?.[ME]) return; const list=(ls.get('link.recent')||[]).filter(x=>x.code!==CODE); list.unshift({code:CODE,name:R.name,local:LOCAL&&!!Remote,at:Date.now()}); ls.set('link.recent',list.slice(0,8)); };
+const recent = () => (ls.get('link.recent')||[]).filter(x=>!x.sim&&!x.local);
+const remember = () => { if(!R?.members?.[ME]||R.sim) return; const list=(ls.get('link.recent')||[]).filter(x=>x.code!==CODE); list.unshift({code:CODE,name:R.name,local:LOCAL&&!!Remote,at:Date.now()}); ls.set('link.recent',list.slice(0,8)); };
 if(CODE){ unsub=db().subscribe(CODE, d=>{ const ph=R?.phase; R=d; remember(); render(ph!==d?.phase); }); setTimeout(()=>{ if(R===null && $('#app').textContent.includes('불러오는')) render(true); },10000); }
 else render(true);
 </script>
