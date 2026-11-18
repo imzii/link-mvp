@@ -145,17 +145,17 @@ export function recommendReason(member, [roleName, , trait]) {
 
 /**
  * 고른 유형들의 업무를 단계(조사 → 구상 → 제작 → 마무리) 순으로 합치고,
- * 단계별 마감일을 오늘부터 최종 마감일까지 4등분해 정한다. 담당은 역할 추천을 따른다.
+ * 단계별 마감일을 오늘부터 최종 마감일까지 4등분해 정한다.
+ * 담당은 비워 둔다. 팀원이 직접 맡고, 추천은 화면에서 참고로만 보여 준다(앵커링 방지).
  */
 export function buildPlan(room) {
   const start = today();
   const end = room.deadline && room.deadline > start ? room.deadline : addDays(start, 14);
   const span = Math.max(4, daysBetween(start, end));
-  const owners = recommendRoles(room);
   const tasks = typeProfile(room).tasks.slice().sort((a, b) => a[2] - b[2]);
   const plan = {};
   tasks.forEach(([title, role, step], i) => {
-    plan['t' + i] = { title, role, who: owners[role] || '', due: addDays(start, Math.round(span * step / 4)), status: 0, order: i };
+    plan['t' + i] = { title, role, who: '', due: addDays(start, Math.round(span * step / 4)), status: 0, order: i };
   });
   return plan;
 }

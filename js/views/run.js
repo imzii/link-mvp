@@ -12,7 +12,8 @@ const sortedTasks = () => Object.entries(state.room.tasks || {})
 const finalIdea = () => (state.room.mix?.final || state.room.sync?.final)?.text;
 
 export function runView() {
-  const room = state.room, tasks = sortedTasks();
+  const room = state.room, tasks = sortedTasks(), suggested = recommendRoles(room);
+  const unassigned = tasks.filter(([, t]) => !t.who).length;
   const done = tasks.filter(([, t]) => t.status === 2).length;
   const percent = tasks.length ? Math.round(done / tasks.length * 100) : 0;
   const myOpen = tasks.filter(([, t]) => t.who === state.me && t.status !== 2);
@@ -36,7 +37,8 @@ export function runView() {
       <td><b class="sm">${esc(t.title)}</b>${t.role ? `<div class="xs sub">${esc(t.role)}</div>` : ''}</td>
       <td><label class="sr-only" for="owner-${id}">담당</label>
         <select id="owner-${id}" class="compact-select" data-owner="${id}"><option value="">미배정</option>
-        ${members().map(([mid, m]) => `<option value="${mid}" ${t.who === mid ? 'selected' : ''}>${esc(m.name)}</option>`).join('')}</select></td>
+        ${members().map(([mid, m]) => `<option value="${mid}" ${t.who === mid ? 'selected' : ''}>${esc(m.name)}</option>`).join('')}</select>
+        ${t.who ? '' : `<div class="no-print" style="margin-top:4px"><button class="btn-link" data-take="${id}">내가 맡기</button>${suggested[t.role] ? `<div class="xs sub">참고: ${esc(memberName(suggested[t.role]))}</div>` : ''}</div>`}</td>
       <td class="sm" style="white-space:nowrap">${t.due ? shortDate(t.due) : '-'}</td>
       <td><button class="status status-${t.status}" data-status="${id}" aria-label="${esc(t.title)} 상태: ${TASK_STATUS[t.status]}. 눌러서 변경">${TASK_STATUS[t.status]}</button></td>
     </tr>`).join('')}
@@ -64,6 +66,7 @@ export function runView() {
     const id = e.currentTarget.dataset.status;
     save({ [`tasks.${id}.status`]: ((room.tasks[id].status || 0) + 1) % TASK_STATUS.length });
   });
+  on('[data-take]', 'click', e => save({ [`tasks.${e.currentTarget.dataset.take}.who`]: state.me }));
   on('[data-owner]', 'change', e => save({ [`tasks.${e.target.dataset.owner}.who`]: e.target.value }));
   $('#addTask').onsubmit = e => {
     e.preventDefault();
@@ -76,7 +79,7 @@ export function runView() {
   $('#printResult').onclick = () => window.print();
 
   bottomBar({
-    message: percent === 100 ? '모든 업무를 마쳤어요' : '',
+    message: unassigned ? `담당이 없는 업무가 ${unassigned}개 있어요` : percent === 100 ? '모든 업무를 마쳤어요' : '',
     buttons: isLeader() ? '<button id="backToMix">아이디어 다시 보기</button>' : '',
   });
   if ($('#backToMix')) confirmTwice($('#backToMix'), '한 번 더 누르면 이동', () => save({ phase: 'mix' }));
@@ -84,7 +87,7 @@ export function runView() {
 
 /** 보고서에 붙일 수 있는 결과 정리 (마크다운: Notion은 표로, 한글에는 글로 붙는다) */
 function resultText() {
-  const room = state.room, owners = recommendRoles(room);
+  const room = state.room;
   const lines = [
     `# ${room.name}`, '',
     `- 주제: ${room.topic}`,
@@ -92,8 +95,8 @@ function resultText() {
     `- 평가 기준: ${criteriaOf().join(', ')}`,
     `- 최종 마감일: ${room.deadline || '-'}`, '',
     '## 최종 아이디어', finalIdea() || '-', '',
-    '## 팀원과 추천 역할',
-    ...members().map(([id, m]) => `- ${m.name} (${m.major}, ${m.trait}): ${typeProfile().roles.filter(([r]) => owners[r] === id).map(([r]) => r).join(', ') || '-'}`), '',
+    '## 팀원과 맡은 업무',
+    ...members().map(([id, m]) => `- ${m.name} (${m.major}, ${m.trait}): ${sortedTasks().filter(([, t]) => t.who === id).map(([, t]) => t.title).join(', ') || '-'}`), '',
     '## 업무',
     '| 업무 | 담당 | 마감 | 상태 |', '| --- | --- | --- | --- |',
     ...sortedTasks().map(([, t]) => `| ${t.title} | ${t.who ? memberName(t.who) : '미배정'} | ${t.due || '-'} | ${TASK_STATUS[t.status]} |`),

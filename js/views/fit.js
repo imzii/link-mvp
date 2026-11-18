@@ -107,16 +107,27 @@ export function teamCard() {
   </div>`;
 }
 
+/**
+ * 역할 조율표. 각자 낸 희망 역할을 먼저 보여 주고, 희망이 겹치거나 아무도 원하지 않는 역할에만
+ * 성향 기반 추천을 '참고'로 붙인다. 추천이 먼저 보이면 그대로 따르게 되기 쉬워서다(앵커링).
+ */
 function roleRecommendationCard() {
   const roles = typeProfile().roles, owners = recommendRoles(state.room);
-  const mine = roles.filter(([role]) => owners[role] === state.me).map(([role]) => role);
+  const wantersOf = role => members().filter(([, m]) => (m.wants || []).includes(role)).map(([id]) => id);
+  const person = id => `<span class="row" style="gap:6px">${avatar(id)}${esc(memberName(id))}</span>`;
+  const rows = roles.map(role => {
+    const wanters = wantersOf(role[0]), owner = owners[role[0]];
+    const status = wanters.length === 1 ? '<span class="xs sub">희망 1명</span>'
+      : wanters.length ? '<span class="chip on">조율 필요</span>' : '<span class="xs sub">희망자 없음</span>';
+    const hint = wanters.length === 1 || !owner ? ''
+      : `<div class="xs sub" style="margin-top:4px">참고: ${esc(memberName(owner))} (${recommendReason(state.room.members[owner], role)})</div>`;
+    return `<tr><td><b>${esc(role[0])}</b><div class="xs sub">${role[1]}시간</div></td>
+      <td><div class="people">${wanters.map(person).join('') || '-'}</div>${hint}</td><td>${status}</td></tr>`;
+  });
+  const conflicts = roles.filter(([r]) => wantersOf(r).length !== 1).length;
   return `<div class="card">
-    <h3>역할 추천</h3>
-    ${mine.length ? `<p style="margin:4px 0 10px">나에게 추천: <b>${mine.map(esc).join(', ')}</b></p>` : ''}
-    <table><thead><tr><th>역할</th><th>예상 시간</th><th>추천</th></tr></thead><tbody>
-    ${roles.map(role => { const owner = owners[role[0]]; return `<tr><td><b>${esc(role[0])}</b></td><td>${role[1]}시간</td>
-      <td>${owner ? `<div class="row">${avatar(owner)}${esc(memberName(owner))}</div><div class="xs sub" style="margin-top:4px">${recommendReason(state.room.members[owner], role)}</div>` : '-'}</td></tr>`; }).join('')}
-    </tbody></table>
+    <div class="row between"><h3>역할 조율</h3><span class="sm sub">${conflicts ? `이야기할 역할 ${conflicts}개` : '모두 희망대로 나뉘었어요'}</span></div>
+    <table style="margin-top:6px"><thead><tr><th>역할</th><th>희망한 사람</th><th>상태</th></tr></thead><tbody>${rows.join('')}</tbody></table>
   </div>`;
 }
 
