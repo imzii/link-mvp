@@ -1,11 +1,11 @@
 // 시뮬레이션: 같은 주제를 동일 전공 팀과 융합 전공 팀으로 비교해 본다.
 // 이 기기 안(로컬 저장소)에서만 돌고, '참여한 프로젝트' 목록에는 남지 않는다.
 
-import { randomId, today, addDays } from '../util.js';
-import { TYPES } from '../content.js';
-import { state } from '../state.js';
-import { Local } from '../store.js';
-import { openProject } from './home.js';
+import { randomId, today, addDays } from './util.js';
+import { TYPES } from './content.js';
+import { app } from './app.svelte.js';
+import { Local } from './store.js';
+import { openProject } from './nav.js';
 
 const TOPIC = '무임승차를 줄이는 서비스, 무엇을 만들까?';
 
@@ -48,13 +48,13 @@ export async function startSimulation(kind) {
     team.cards.slice(i * 3, i * 3 + 3).forEach(([text, why], j) => { cards[`c${i}${j}`] = { text, why, by: id, at: now + i * 10 + j }; });
   });
   // 나는 리더로 참여하고, 아직 카드를 쓰지 않은 상태로 POP에서 시작한다.
-  members[state.me] = { name: '나', major: team.me, skills: '기획, 개발', trait: '아이디어형', wants: ['콘셉트 기획'], scores: {}, joinedAt: now + 9 };
+  members[app.me] = { name: '나', major: team.me, skills: '기획, 개발', trait: '아이디어형', wants: ['콘셉트 기획'], scores: {}, joinedAt: now + 9 };
 
   const code = 'S' + randomId(5);
   await Local.create(code, {
     v: 4, sim: true, name: team.name, topic: TOPIC, types: ['plan'], criteria: TYPES.plan.criteria.slice(),
     deadline: addDays(today(), 14), cardsPerPerson: 3, popMinutes: 30, popEnd: now + 30 * 60000,
-    hostId: state.me, createdAt: now, phase: 'pop', phaseAt: now, members, cards,
+    hostId: app.me, createdAt: now, phase: 'pop', phaseAt: now, members, cards,
   });
   openProject(code, { local: true });
 }

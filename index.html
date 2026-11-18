@@ -5,25 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#ffffff">
   <title>POPCORN — 생각은 톡톡 자유롭게, 협업은 유기적으로</title>
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <header>
-    <div class="header-row">
-      <a class="logo" href="./"><img src="favicon.svg" alt="" width="24" height="24">POPCORN</a>
-      <span class="project-name" id="projectName"></span>
-    </div>
-    <nav class="steps" id="steps" aria-label="진행 단계" hidden></nav>
-  </header>
-
-  <main id="app"></main>
-
-  <div class="bottom-bar" id="bottomBar" hidden><div class="inner" id="bottomBarInner"></div></div>
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-  <script type="module" src="js/app.js"></script>
+  <div id="root"></div>
+  <script type="module" src="/src/main.js"></script>
 </body>
 </html>

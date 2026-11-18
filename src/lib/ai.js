@@ -2,7 +2,7 @@
 // 실제 서비스에서는 이 파일의 함수들을 같은 입력·출력 모양의 LLM 호출로 바꾸면 된다.
 
 import { TEAM_HINTS } from './content.js';
-import { members, typeProfile, state } from './state.js';
+import { members, typeProfile, app } from './app.svelte.js';
 import { today, addDays, daysBetween } from './util.js';
 
 // ---------- 글 비교 ----------
@@ -34,7 +34,7 @@ const shorten = (text, max = 24) => { const t = (text || '').trim(); return t.le
 // ---------- 팀 구성 ----------
 
 /** 전공이 모두 같으면 'same', 하나라도 다르면 'mixed'. '경영학과'와 '경영학부'는 같은 전공으로 본다. */
-export function teamComposition(room = state.room) {
+export function teamComposition(room = app.room) {
   const majors = members(room).map(([, m]) => (m.major || '').trim()).filter(Boolean);
   const normalize = m => m.replace(/\s/g, '').replace(/(학부|전공|과)$/, '');
   return {
@@ -48,7 +48,7 @@ export function teamComposition(room = state.room) {
 /** i번째 시즈닝 질문. 유형별 질문과 팀 구성별 질문을 번갈아 보여 준다. */
 export function seasoningQuestion(room, i) {
   const team = teamComposition(room);
-  const otherMajors = members(room).filter(([id]) => id !== state.me).map(([, m]) => m.major).filter(Boolean);
+  const otherMajors = members(room).filter(([id]) => id !== app.me).map(([, m]) => m.major).filter(Boolean);
   const teamQuestions = TEAM_HINTS[team.kind].map(q => ({
     q: q.replace('{major}', otherMajors[i % Math.max(1, otherMajors.length)] || '다른 전공'),
     tag: team.kind === 'same' ? '동일 전공 팀' : '융합 전공 팀',

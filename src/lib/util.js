@@ -1,14 +1,5 @@
 // 화면과 관계없는 작은 도구들
 
-export const $ = sel => document.querySelector(sel);
-export const $$ = sel => [...document.querySelectorAll(sel)];
-
-/** 선택자에 맞는 모든 요소에 이벤트를 단다. */
-export const on = (sel, event, handler) => $$(sel).forEach(el => el.addEventListener(event, handler));
-
-/** HTML에 끼워 넣을 문자열을 안전하게 바꾼다. 사용자가 입력한 값은 반드시 거친다. */
-export const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';     // 헷갈리는 0/O, 1/I 제외
 const ID_CHARS = 'abcdefghijkmnpqrstuvwxyz23456789';
 /** 무작위 문자열. 초대 코드는 기본 문자 집합(대문자), 내부 id는 소문자를 쓴다. */
@@ -27,13 +18,8 @@ export const storage = {
   set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* 무시 */ } },
 };
 
-export function toast(message) {
-  const el = $('#toast');
-  el.textContent = message;
-  el.classList.add('show');
-  clearTimeout(el.hideTimer);
-  el.hideTimer = setTimeout(() => el.classList.remove('show'), 2200);
-}
+export { toast } from './toast.svelte.js';
+import { toast } from './toast.svelte.js';
 
 export async function copyText(text) {
   try { await navigator.clipboard.writeText(text); toast('복사했어요'); }

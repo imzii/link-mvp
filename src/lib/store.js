@@ -51,8 +51,8 @@ export const Local = {
 };
 
 export async function connectFirebase(config) {
-  const { initializeApp } = await import(FIREBASE_SDK + 'firebase-app.js');
-  const fs = await import(FIREBASE_SDK + 'firebase-firestore.js');
+  const { initializeApp } = await import(/* @vite-ignore */ FIREBASE_SDK + 'firebase-app.js');
+  const fs = await import(/* @vite-ignore */ FIREBASE_SDK + 'firebase-firestore.js');
   const db = fs.getFirestore(initializeApp(config));
   const ref = code => fs.doc(db, 'rooms', code);
   return {

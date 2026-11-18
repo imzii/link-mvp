@@ -4,7 +4,7 @@
 
 대학생 팀 프로젝트를 위한 웹 협업 툴입니다. 역할 매칭(FIT), 각자 의견 내기(POP), 의견 수렴(MIX), 협업 실행(RUN)이 한 흐름으로 이어집니다. 팀원은 링크만 열면 로그인 없이 참여합니다.
 
-창의적기획과문제해결 2조 팀 프로젝트의 시연용 구현입니다. 빌드 과정 없이 정적 파일(ES 모듈)로 동작합니다.
+창의적기획과문제해결 2조 팀 프로젝트의 시연용 구현입니다. Svelte 5 + Vite로 만들었고, main에 올리면 GitHub Actions가 빌드해서 GitHub Pages에 배포합니다.
 
 ## 주요 동작
 
@@ -16,23 +16,33 @@
 - **역할 추천**은 성향 질문 5개, 희망 역할, 자신 있는 것을 보고 예상 소요 시간 기준으로 업무량을 맞춥니다.
 - **시뮬레이션**: 첫 화면에서 동일 전공 팀과 융합 전공 팀을 같은 주제로 비교해 볼 수 있습니다.
 
+## 개발
+
+```
+npm install
+npm run dev                  # http://localhost:5173
+VITE_LOCAL=1 npm run dev     # Firebase 없이 이 브라우저 안에서만 저장 (테스트용, ?as=이름 으로 여러 사용자 흉내)
+npm run build                # dist/ 에 정적 파일 생성
+```
+
 ## 파일 구조
 
 ```
-index.html          화면 틀
-css/style.css       스타일
-js/app.js           시작점: 저장소 연결, 단계별 화면 고르기
-js/config.js        Firebase 설정
-js/store.js         저장소 (Firestore / 로컬)
-js/state.js         공용 상태와 방 데이터 읽기 도우미
-js/content.js       유형별 질문·기준·역할·업무 등 문구 데이터
-js/ai.js            규칙 기반 분석 (유사도, 다수·소수 분류, 역할 추천, 실행 계획)
-js/ui.js            머리글, 하단 바, 두 번 눌러 확인
-js/util.js          DOM·날짜·복사 도우미
-js/views/*.js       화면: home, fit, pop, mix, run, simulation
+index.html                 화면 틀
+src/main.js                시작점
+src/App.svelte             저장소 연결, 문서 구독, 단계별 화면 고르기
+src/app.css                스타일
+src/views/                 Home, Join, Fit, Pop, Mix, Run
+src/components/            Header, BottomBar, Avatar, Reaction, TwoStepButton
+src/lib/app.svelte.js      공용 상태(반응형)와 방 데이터 읽기 도우미
+src/lib/store.js           저장소 (Firestore / 로컬)
+src/lib/content.js         유형별 질문·기준·역할·업무 등 문구 데이터
+src/lib/ai.js              규칙 기반 분석 (유사도, 다수·소수 분류, 역할 추천, 실행 계획)
+src/lib/simulation.js      시뮬레이션 데이터
+src/lib/config.js          Firebase 설정
+public/                    파비콘
+.github/workflows/         GitHub Pages 배포
 ```
-
-ES 모듈이라 `file://`로는 열리지 않습니다. 로컬에서는 `python3 -m http.server`로 띄워 확인합니다.
 
 ## 서버 연결 (Firebase)
 
@@ -53,7 +63,7 @@ ES 모듈이라 `file://`로는 열리지 않습니다. 로컬에서는 `python3
    }
    ```
 
-4. **프로젝트 설정 → 일반 → 내 앱 → 웹(</>)**으로 앱을 등록하고, 나오는 `firebaseConfig` 객체를 `js/config.js`의 `FIREBASE_CONFIG`에 넣습니다. `null`로 두면 로컬 시연 모드입니다.
+4. **프로젝트 설정 → 일반 → 내 앱 → 웹(</>)**으로 앱을 등록하고, 나오는 `firebaseConfig` 객체를 `src/lib/config.js`에 넣습니다.
 
 ## 알려진 한계 (다음 개편 때 다룰 것)
 
