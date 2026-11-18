@@ -1,15 +1,14 @@
 // RUN: 협업 실행. 업무 표, 내 할 일, 팀원별 진행, 결과 내보내기.
 
-import { $, on, esc, today, shortDate, daysBetween, newId, copyText } from '../util.js';
-import { TASK_STATUS } from '../content.js';
-import { state, save, members, memberName, avatar, isLeader, typeProfile, criteriaOf } from '../state.js';
+import { $, on, esc, toast, today, shortDate, daysBetween, newId, copyText, formatMinutes } from '../util.js';
+import { TASK_STATUS, POP_DURATIONS } from '../content.js';
+import { state, save, members, memberName, avatar, isLeader, typeProfile, criteriaOf, decisions, roundNumber } from '../state.js';
 import { recommendRoles } from '../ai.js';
 import { bottomBar, confirmTwice } from '../ui.js';
 
 const sortedTasks = () => Object.entries(state.room.tasks || {})
   .sort((a, b) => (a[1].due || '').localeCompare(b[1].due || '') || (a[1].order ?? a[1].i ?? 0) - (b[1].order ?? b[1].i ?? 0));
 
-const finalIdea = () => (state.room.mix?.final || state.room.sync?.final)?.text;
 
 export function runView() {
   const room = state.room, tasks = sortedTasks(), suggested = recommendRoles(room);
@@ -20,7 +19,20 @@ export function runView() {
   const daysLeft = room.deadline ? daysBetween(today(), room.deadline) : null;
 
   $('#app').innerHTML = `
-  <h1>${esc(finalIdea() || room.topic)}</h1>
+  <h1>${esc(room.name)}</h1>
+
+  <div class="card"><h3>정한 것</h3>
+    ${decisions().map((d, i) => `<div class="idea"><div class="xs sub">${i + 1}. ${esc(d.question)}</div><div class="idea-title" style="margin-top:2px">${esc(d.final || '-')}</div></div>`).join('')}
+    ${isLeader() ? `<form id="newRound" class="no-print" novalidate style="margin-top:12px">
+      <label for="nextQuestion">새로 정할 것</label>
+      <input id="nextQuestion" maxlength="80" placeholder="예: 발표는 누가, 어떤 순서로 할까?" autocomplete="off">
+      <div class="row" style="margin-top:8px">
+        <label for="nextMinutes" class="sr-only">의견 내는 기간</label>
+        <select id="nextMinutes" class="grow">${POP_DURATIONS.map(m => `<option value="${m}" ${m === (room.popMinutes || 1440) ? 'selected' : ''}>${formatMinutes(m)} 동안 의견 받기</option>`).join('')}</select>
+        <button type="submit">POP 시작</button>
+      </div>
+    </form>` : ''}
+  </div>
 
   <div class="card">
     <div class="row between"><b>전체 진행률 ${percent}%</b>
@@ -75,6 +87,12 @@ export function runView() {
     save({ [`tasks.${newId('t', 6)}`]: { title, role: '', who: '', due: $('#taskDue').value, status: 0, order: 99 } });
     $('#taskTitle').value = ''; $('#taskTitle').blur();
   };
+  $('#newRound') && ($('#newRound').onsubmit = e => {
+    e.preventDefault();
+    const question = $('#nextQuestion').value.trim();
+    if (!question) { toast('새로 정할 것을 적어 주세요'); return $('#nextQuestion').focus(); }
+    startNextRound(question, +$('#nextMinutes').value);
+  });
   $('#copyResult').onclick = () => copyText(resultText());
   $('#printResult').onclick = () => window.print();
 
@@ -85,16 +103,26 @@ export function runView() {
   if ($('#backToMix')) confirmTwice($('#backToMix'), '한 번 더 누르면 이동', () => save({ phase: 'mix' }));
 }
 
+/** 지금 라운드를 보관하고, 같은 팀으로 새 질문의 POP을 연다. 업무와 팀원은 그대로다. */
+function startNextRound(question, minutes) {
+  const room = state.room, now = Date.now(), n = roundNumber();
+  save({
+    [`rounds.${n}`]: { topic: room.topic, cards: room.cards || {}, mix: room.mix || room.sync || null, popMinutes: room.popMinutes || null, closedAt: now },
+    round: n + 1, topic: question, cards: {}, mix: null, sync: null,
+    popMinutes: minutes, popEnd: now + minutes * 60000, phase: 'pop', phaseAt: now,
+  });
+}
+
 /** 보고서에 붙일 수 있는 결과 정리 (마크다운: Notion은 표로, 한글에는 글로 붙는다) */
 function resultText() {
   const room = state.room;
   const lines = [
     `# ${room.name}`, '',
-    `- 정할 것: ${room.topic}`,
     `- 유형: ${typeProfile().names.join(', ')}`,
     `- 평가 기준: ${criteriaOf().join(', ')}`,
     `- 최종 마감일: ${room.deadline || '-'}`, '',
-    '## 최종안', finalIdea() || '-', '',
+    '## 정한 것',
+    ...decisions().map((d, i) => `${i + 1}. ${d.question}\n   - ${d.final || '-'}`), '',
     '## 팀원과 맡은 업무',
     ...members().map(([id, m]) => `- ${m.name} (${m.major}, ${m.trait}): ${sortedTasks().filter(([, t]) => t.who === id).map(([, t]) => t.title).join(', ') || '-'}`), '',
     '## 업무',

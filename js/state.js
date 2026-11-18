@@ -86,6 +86,18 @@ export function typeProfile(room = state.room) {
   };
 }
 
+// ---------- 정할 것 (라운드) ----------
+// 지금 정하는 것은 문서 맨 위(topic, cards, mix)에 있고, 끝난 라운드는 rounds.{번호}에 보관한다.
+
+export const roundNumber = (room = state.room) => room.round || 1;
+const finalOf = r => (r.mix?.final || r.sync?.final)?.text || '';
+
+/** 지금까지 정한 것들. 오래된 순서. */
+export function decisions(room = state.room) {
+  const past = Object.entries(room.rounds || {}).sort((a, b) => a[0] - b[0]).map(([, r]) => ({ question: r.topic, final: finalOf(r) }));
+  return [...past, { question: room.topic, final: finalOf(room), current: true }];
+}
+
 export const criteriaOf = (room = state.room) => room.criteria?.length ? room.criteria : (room.crit?.length ? room.crit : typeProfile(room).criteria);
 
 // ---------- 최근 프로젝트 (이 기기) ----------

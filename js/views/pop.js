@@ -2,7 +2,7 @@
 // 전원이 최소 장수를 내거나 발산 기간이 끝나면 MIX로 자동으로 넘어간다.
 
 import { $, on, esc, toast, newId, formatRemaining, formatMinutes } from '../util.js';
-import { state, saveUi, save, members, cardsOf, isLeader, typeProfile } from '../state.js';
+import { state, saveUi, save, members, cardsOf, isLeader, typeProfile, roundNumber } from '../state.js';
 import { seasoningQuestion, nextWhy } from '../ai.js';
 import { bottomBar, rerender } from '../ui.js';
 
@@ -37,7 +37,9 @@ export function statusCard() {
 
 export function popView() {
   if (autoAdvanceIfReady()) return;
-  const ui = state.ui, mine = cardsOf(state.me), over = timeLeft() <= 0;
+  const ui = state.ui;
+  if (ui.round !== roundNumber()) Object.assign(ui, { round: roundNumber(), draft: '', why: '', hintIndex: 0, whyChain: [] }), saveUi();
+  const mine = cardsOf(state.me), over = timeLeft() <= 0;
   const hint = seasoningQuestion(state.room, ui.hintIndex);
 
   $('#app').innerHTML = `

@@ -1,6 +1,6 @@
 // MIX: 의견 수렴. 소수 의견을 다수 의견보다 먼저 보여 주고, 평가 기준으로 후보를 평가한다.
 
-import { $, on, esc, toast } from '../util.js';
+import { $, on, esc, toast, today, addDays, newId } from '../util.js';
 import { state, save, isLeader, criteriaOf, members } from '../state.js';
 import { splitOpinions, teamComposition, questionForMinority, questionForMajority, buildPlan } from '../ai.js';
 import { bottomBar } from '../ui.js';
@@ -36,7 +36,7 @@ export function mixView() {
   const totalOf = key => Object.values(scores[key] || {}).reduce((sum, checks) => sum + checks.filter(Boolean).length, 0);
 
   $('#app').innerHTML = `
-  <h1>의견 ${opinions.cards.length}장이 모였어요</h1>
+  <h1>의견 ${opinions.cards.length}장이 모였어요</h1><p class="sub">${esc(state.room.topic)}</p>
 
   <div class="card note"><div class="note-title">융합 협업 가이드</div>
     ${team.kind === 'same'
@@ -98,5 +98,11 @@ export function mixView() {
   else bottomBar({ message: status, left: doneButton, buttons: `<button class="btn-primary" id="startRun" ${final ? '' : 'disabled'}>RUN 시작</button>` });
   $('#finishScoring') && ($('#finishScoring').onclick = () => save({ [`mix.done.${state.me}`]: true }));
   if (!isLeader()) return;
-  $('#startRun').onclick = () => save({ phase: 'run', phaseAt: Date.now(), tasks: buildPlan(state.room) });
+  $('#startRun').onclick = () => {
+    // 첫 라운드는 실행 계획을 만들고, 이후 라운드는 기존 업무에 '반영' 업무 하나만 더한다.
+    if (!state.room.tasks) return save({ phase: 'run', phaseAt: Date.now(), tasks: buildPlan(state.room) });
+    const due = [addDays(today(), 3), state.room.deadline].filter(Boolean).sort()[0];
+    save({ phase: 'run', phaseAt: Date.now(),
+      [`tasks.${newId('t', 6)}`]: { title: `반영: ${mixData().final.text}`, role: '', who: '', due, status: 0, order: 99 } });
+  };
 }
