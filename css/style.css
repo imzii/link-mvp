@@ -38,7 +38,7 @@ p { margin: 6px 0; }
 
 /* ---------- 머리글 · 단계 표시 ---------- */
 header { position: sticky; top: 0; z-index: 10; background: #fff; border-bottom: 1px solid var(--line); }
-.header-row { max-width: 760px; margin: 0 auto; padding: 12px 16px 8px; display: flex; align-items: baseline; gap: 12px; }
+.header-row { max-width: 760px; margin: 0 auto; padding: 12px 16px 8px; display: flex; align-items: center; gap: 12px; }
 .logo { display: inline-flex; align-items: center; gap: 6px; align-self: center; font-weight: 800; font-size: 19px; color: var(--red); text-decoration: none; letter-spacing: .02em; }
 .project-name { min-width: 0; flex: 1; font-size: 13px; color: var(--sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .steps { max-width: 760px; margin: 0 auto; padding: 0 16px; display: grid; grid-template-columns: repeat(4, 1fr); }
@@ -155,7 +155,7 @@ th { font-size: 12.5px; color: var(--sub); font-weight: 600; }
   .card { break-inside: avoid; }
   select { border: 0; appearance: none; padding: 0; }
 }
-.logo img { display: block; margin-top: -3px; }
+.logo img { display: block; }
 
 /* POP 도구: 시즈닝은 브랜딩이라 버터색으로 강조한다 */
 .card.seasoning { background: var(--butter-soft); border-color: var(--butter); }
