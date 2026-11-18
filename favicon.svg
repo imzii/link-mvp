@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <clipPath id="box"><path d="M5 14h22l-3 16H8z"/></clipPath>
+  </defs>
+  <g fill="#F5B800">
+    <circle cx="10" cy="11" r="5"/>
+    <circle cx="16" cy="8" r="6"/>
+    <circle cx="22" cy="11" r="5"/>
+  </g>
+  <g clip-path="url(#box)">
+    <rect x="0" y="14" width="32" height="18" fill="#FFFFFF"/>
+    <rect x="5" y="14" width="5" height="18" fill="#D7311E"/>
+    <rect x="13.5" y="14" width="5" height="18" fill="#D7311E"/>
+    <rect x="22" y="14" width="5" height="18" fill="#D7311E"/>
+  </g>
+  <path d="M5 14h22l-3 16H8z" fill="none" stroke="#D7311E" stroke-width="1.5" stroke-linejoin="round"/>
+</svg>
