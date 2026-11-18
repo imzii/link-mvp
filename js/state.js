@@ -77,6 +77,8 @@ export function typeProfile(room = state.room) {
   const keys = typeKeys(room);
   return {
     names: keys.map(k => TYPES[k].name),
+    question: TYPES[keys[0]].question,
+    opinion: TYPES[keys[0]].opinion,
     criteria: unique(keys.flatMap(k => TYPES[k].criteria)),
     hints: keys.flatMap(k => TYPES[k].hints.map(q => ({ q, tag: TYPES[k].name }))),
     roles: unique(keys.flatMap(k => TYPES[k].roles), r => r[0]),

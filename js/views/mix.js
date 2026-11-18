@@ -36,11 +36,11 @@ export function mixView() {
   const totalOf = key => Object.values(scores[key] || {}).reduce((sum, checks) => sum + checks.filter(Boolean).length, 0);
 
   $('#app').innerHTML = `
-  <h1>아이디어 ${opinions.cards.length}장이 모였어요</h1>
+  <h1>의견 ${opinions.cards.length}장이 모였어요</h1>
 
   <div class="card note"><div class="note-title">융합 협업 가이드</div>
     ${team.kind === 'same'
-      ? `아이디어 유사도가 ${Math.round(opinions.similarityAvg * 100)}%예요. 같은 전공의 익숙한 틀에서 나왔을 수 있으니 소수 의견부터 이야기해 보세요.`
+      ? `의견 유사도가 ${Math.round(opinions.similarityAvg * 100)}%예요. 같은 전공의 익숙한 틀에서 나왔을 수 있으니 소수 의견부터 이야기해 보세요.`
       : `${team.majors.map(esc).join(', ')} 전공이 모였어요. 낯선 용어가 있는 카드는 작성자가 한 줄로 풀어 설명하고, 전공 사이의 접점을 찾아보세요.`}
   </div>
 
@@ -48,7 +48,7 @@ export function mixView() {
     <div class="row between"><h3><span class="badge minority">B</span>소수 의견</h3><span class="sm sub">${opinions.minority.length}장</span></div>
     ${opinions.minority.length ? opinions.minority.map(card => `<div class="idea">${ideaBlock(card)}
       <div class="sm" style="margin-top:8px"><b>생각해 볼 질문</b> ${esc(questionForMinority(card))}</div>
-      ${reactionToggle(card.id)}</div>`).join('') : '<p class="sub sm">모든 아이디어가 비슷한 방향이에요.</p>'}
+      ${reactionToggle(card.id)}</div>`).join('') : '<p class="sub sm">모든 의견이 비슷한 방향이에요.</p>'}
   </section>
 
   <section class="card">
@@ -68,7 +68,7 @@ export function mixView() {
     </div>`).join('')}
   </section>
 
-  ${final ? `<div class="card emphasis"><h3>최종 아이디어</h3><p style="font-weight:700;font-size:17px;margin-top:4px">${esc(final.text)}</p></div>` : ''}`;
+  ${final ? `<div class="card emphasis"><h3>최종안</h3><p style="font-weight:700;font-size:17px;margin-top:4px">${esc(final.text)}</p></div>` : ''}`;
 
   on('[data-react]', 'click', e => {
     const { react: key, value } = e.currentTarget.dataset;
@@ -87,13 +87,13 @@ export function mixView() {
     if (!revealed() && !button.dataset.armed) { button.dataset.armed = '1'; button.textContent = '평가 중인 사람이 있어요. 한 번 더 누르면 확정'; return; }
     const chosen = candidates.find(c => c.key === button.dataset.final);
     save({ 'mix.final': { key: chosen.key, text: chosen.text } });
-    toast('최종 아이디어로 확정했어요');
+    toast('최종안으로 확정했어요');
   });
 
   const iAmDone = !!mixData().done?.[state.me];
   const doneButton = iAmDone ? '' : '<button id="finishScoring">평가 완료</button>';
   const waiting = members().length - doneIds().length;
-  const status = final ? '최종 아이디어가 확정됐어요' : waiting ? `${waiting}명이 평가 중이에요` : '모두 평가를 마쳤어요';
+  const status = final ? '최종안이 확정됐어요' : waiting ? `${waiting}명이 평가 중이에요` : '모두 평가를 마쳤어요';
   if (!isLeader()) bottomBar({ message: status, buttons: doneButton });
   else bottomBar({ message: status, left: doneButton, buttons: `<button class="btn-primary" id="startRun" ${final ? '' : 'disabled'}>RUN 시작</button>` });
   $('#finishScoring') && ($('#finishScoring').onclick = () => save({ [`mix.done.${state.me}`]: true }));

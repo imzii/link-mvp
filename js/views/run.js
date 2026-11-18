@@ -80,7 +80,7 @@ export function runView() {
 
   bottomBar({
     message: unassigned ? `담당이 없는 업무가 ${unassigned}개 있어요` : percent === 100 ? '모든 업무를 마쳤어요' : '',
-    buttons: isLeader() ? '<button id="backToMix">아이디어 다시 보기</button>' : '',
+    buttons: isLeader() ? '<button id="backToMix">최종안 다시 보기</button>' : '',
   });
   if ($('#backToMix')) confirmTwice($('#backToMix'), '한 번 더 누르면 이동', () => save({ phase: 'mix' }));
 }
@@ -90,11 +90,11 @@ function resultText() {
   const room = state.room;
   const lines = [
     `# ${room.name}`, '',
-    `- 주제: ${room.topic}`,
+    `- 정할 것: ${room.topic}`,
     `- 유형: ${typeProfile().names.join(', ')}`,
     `- 평가 기준: ${criteriaOf().join(', ')}`,
     `- 최종 마감일: ${room.deadline || '-'}`, '',
-    '## 최종 아이디어', finalIdea() || '-', '',
+    '## 최종안', finalIdea() || '-', '',
     '## 팀원과 맡은 업무',
     ...members().map(([id, m]) => `- ${m.name} (${m.major}, ${m.trait}): ${sortedTasks().filter(([, t]) => t.who === id).map(([, t]) => t.title).join(', ') || '-'}`), '',
     '## 업무',

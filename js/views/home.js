@@ -26,8 +26,8 @@ export function homeView() {
     <h2 style="margin-top:0">새 프로젝트 만들기</h2>
     <label for="name">프로젝트 이름</label>
     <input id="name" required placeholder="예: 창의적기획과문제해결 2조" autocomplete="off">
-    <label for="topic">주제</label>
-    <input id="topic" required placeholder="예: 대학생 팀플 무임승차를 줄이는 서비스 기획" autocomplete="off">
+    <label for="topic">이번에 함께 정할 것</label>
+    <input id="topic" required placeholder="예: ${esc(TYPES.plan.question)}" autocomplete="off">
 
     <label id="typeLabel">프로젝트 유형 <span class="xs sub">(여러 개 선택)</span></label>
     <div class="choices" role="group" aria-labelledby="typeLabel">
@@ -39,9 +39,9 @@ export function homeView() {
 
     <div class="grid-2">
       <div><label for="deadline">최종 마감일</label><input id="deadline" type="date" value="${addDays(today(), 14)}"></div>
-      <div><label for="cardsPerPerson">1인 아이디어 카드 수 <span class="xs sub">(최소)</span></label>
+      <div><label for="cardsPerPerson">1인 의견 카드 수 <span class="xs sub">(최소)</span></label>
         <select id="cardsPerPerson">${[1, 2, 3, 4, 5].map(n => `<option ${n === 3 ? 'selected' : ''}>${n}</option>`).join('')}</select></div>
-      <div><label for="popMinutes">아이디어 발산 기간</label>
+      <div><label for="popMinutes">의견 내는 기간</label>
         <select id="popMinutes">${POP_DURATIONS.map(m => `<option value="${m}" ${m === DEFAULT_POP_MINUTES ? 'selected' : ''}>${formatMinutes(m)}</option>`).join('')}</select></div>
     </div>
     <button class="btn-primary wide" style="margin-top:16px" type="submit">프로젝트 만들고 팀원 초대하기</button>
@@ -80,12 +80,13 @@ export function homeView() {
     } else types = [...types, key];
     $$('[data-type]').forEach(b => b.setAttribute('aria-pressed', types.includes(b.dataset.type)));
     if (!criteriaEdited) { criteria = typeProfile({ types }).criteria.slice(0, 6); drawCriteria(); }
+    $('#topic').placeholder = '예: ' + typeProfile({ types }).question;
   });
 
   $('#newProject').onsubmit = async e => {
     e.preventDefault();
     const name = $('#name').value.trim(), topic = $('#topic').value.trim();
-    if (!name || !topic) { toast('프로젝트 이름과 주제를 적어 주세요'); (name ? $('#topic') : $('#name')).focus(); return; }
+    if (!name || !topic) { toast('프로젝트 이름과 정할 것을 적어 주세요'); (name ? $('#topic') : $('#name')).focus(); return; }
     const code = randomId();
     await state.store.create(code, {
       v: 4, name, topic, types, criteria,

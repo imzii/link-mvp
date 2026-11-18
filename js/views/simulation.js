@@ -7,7 +7,7 @@ import { state } from '../state.js';
 import { Local } from '../store.js';
 import { openProject } from './home.js';
 
-const TOPIC = '대학생 팀플 무임승차를 줄이는 서비스 기획';
+const TOPIC = '무임승차를 줄이는 서비스, 무엇을 만들까?';
 
 const TEAMS = {
   same: {

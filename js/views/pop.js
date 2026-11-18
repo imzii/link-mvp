@@ -1,8 +1,8 @@
-// POP: 아이디어 발산. 다른 팀원의 카드는 보이지 않고, 제출 현황만 실시간으로 보인다.
+// POP: 각자 의견 내기. 다른 팀원의 카드는 보이지 않고, 제출 현황만 실시간으로 보인다.
 // 전원이 최소 장수를 내거나 발산 기간이 끝나면 MIX로 자동으로 넘어간다.
 
 import { $, on, esc, toast, newId, formatRemaining, formatMinutes } from '../util.js';
-import { state, saveUi, save, members, cardsOf, isLeader } from '../state.js';
+import { state, saveUi, save, members, cardsOf, isLeader, typeProfile } from '../state.js';
 import { seasoningQuestion, nextWhy } from '../ai.js';
 import { bottomBar, rerender } from '../ui.js';
 
@@ -45,10 +45,10 @@ export function popView() {
   <div class="card" id="popStatus">${statusCard()}</div>
 
   <form class="card" id="cardForm" novalidate>
-    <h3>내 아이디어 카드 <span class="sub">${mine.length}장 (최소 ${minCards()}장)</span></h3>
+    <h3>내 의견 카드 <span class="sub">${mine.length}장 (최소 ${minCards()}장)</span></h3>
     <fieldset ${over ? 'disabled' : ''}>
-      <label for="ideaText">아이디어 한 줄</label>
-      <input id="ideaText" maxlength="120" value="${esc(ui.draft)}" placeholder="예: 기여도를 매주 자동으로 기록해 보여준다" autocomplete="off">
+      <label for="ideaText">의견 한 줄</label>
+      <input id="ideaText" maxlength="120" value="${esc(ui.draft)}" placeholder="예: ${esc(typeProfile().opinion)}" autocomplete="off">
       <label for="ideaWhy">이유 한 줄 <span class="xs sub">(선택)</span></label>
       <input id="ideaWhy" maxlength="120" value="${esc(ui.why)}" placeholder="왜 그렇게 생각했나요?" autocomplete="off">
       <button class="btn-primary wide" style="margin-top:12px" type="submit">카드 추가</button>
@@ -79,7 +79,7 @@ export function popView() {
     e.preventDefault();
     if (timeLeft() <= 0) return toast('발산 기간이 끝났어요');
     const text = ui.draft.trim();
-    if (!text) { toast('아이디어를 한 줄 적어 주세요'); $('#ideaText').focus(); return; }
+    if (!text) { toast('의견을 한 줄 적어 주세요'); $('#ideaText').focus(); return; }
     const why = $('#ideaWhy').value.trim();
     ui.draft = ''; ui.why = ''; saveUi();
     await save({ [`cards.${newId('c')}`]: { text, why, by: state.me, at: Date.now() } });
@@ -122,6 +122,6 @@ export function popView() {
     });
   } else {
     const remaining = minCards() - mine.length;
-    bottomBar({ message: over ? '곧 다음 단계로 넘어가요' : remaining > 0 ? `아이디어를 ${remaining}장 더 써 주세요` : '다 썼어요' });
+    bottomBar({ message: over ? '곧 다음 단계로 넘어가요' : remaining > 0 ? `의견을 ${remaining}장 더 써 주세요` : '다 썼어요' });
   }
 }
