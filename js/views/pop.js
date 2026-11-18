@@ -13,6 +13,13 @@ const countOf = id => allCards().filter(c => c.by === id).length;
 const doneCount = () => members().filter(([id]) => countOf(id) >= minCards()).length;
 const everyoneDone = () => members().length > 0 && doneCount() === members().length;
 
+// 소금통 아이콘 (시즈닝 브랜딩)
+const SHAKER = `<svg class="shaker" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+  <circle cx="7" cy="4" r="1.2"/><circle cx="12" cy="2.6" r="1.2"/><circle cx="17" cy="4" r="1.2"/>
+  <path d="M8 8.5h8l1.5 3V21a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1v-9.5z" fill="#fff" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+  <path d="M8 8.5c0-1.4 1.8-2.5 4-2.5s4 1.1 4 2.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <circle cx="10.5" cy="15" r=".9"/><circle cx="13.5" cy="15" r=".9"/><circle cx="12" cy="17.6" r=".9"/></svg>`;
+
 let countdown = null;
 export const stopCountdown = () => clearInterval(countdown);
 
@@ -60,17 +67,24 @@ export function popView() {
   </form>
 
   ${over ? '' : `
-  <section class="card note" aria-label="시즈닝 질문">
-    <div class="note-title">시즈닝 질문</div>
-    <p style="font-weight:600">${esc(hint.q)}</p>
-    <button type="button" class="btn-link" id="nextHint">다른 질문 보기</button>
+  <section class="card seasoning" aria-labelledby="seasoningTitle">
+    <div class="seasoning-head">
+      ${SHAKER}<h3 id="seasoningTitle">시즈닝</h3><span class="seasoning-tag">${esc(hint.tag)}</span>
+    </div>
+    <p class="seasoning-question" id="seasoningQuestion">${esc(hint.q)}</p>
+    <button type="button" id="nextHint">한 번 더 뿌리기</button>
   </section>
-  <section class="card note" aria-label="생각 파고들기">
-    <div class="note-title">생각 파고들기 (5 Whys)</div>
-    ${ui.whyChain.map((step, i) => `<div class="sm" style="margin:6px 0"><span class="sub">Q${i + 1}. ${esc(step.q)}</span><br>${esc(step.a)}</div>`).join('')}
-    ${ui.whyChain.length < 5 ? `<form id="whyForm" class="row" novalidate style="margin-top:8px">
-      <label for="whyAnswer" style="margin:0;width:100%">Q${ui.whyChain.length + 1}. ${esc(nextWhy(ui.whyChain))}</label>
-      <input id="whyAnswer" class="grow" autocomplete="off" placeholder="떠오르는 대로 답해 보세요"><button type="submit">답하기</button></form>` : ''}
+
+  <section class="card dig" aria-labelledby="digTitle">
+    <div class="row between">
+      <h3 id="digTitle">생각 파고들기 <span class="sub" style="font-weight:500">5 Whys</span></h3>
+      <span class="dig-steps" aria-label="${ui.whyChain.length}/5단계">${[0, 1, 2, 3, 4].map(i => `<i class="${i < ui.whyChain.length ? 'on' : ''}"></i>`).join('')}</span>
+    </div>
+    ${ui.whyChain.length ? `<ol class="dig-chain">${ui.whyChain.map(step => `<li><span class="sub">${esc(step.q)}</span><br>${esc(step.a)}</li>`).join('')}</ol>` : ''}
+    ${ui.whyChain.length < 5 ? `<form id="whyForm" novalidate>
+      <label for="whyAnswer" class="dig-question">${esc(nextWhy(ui.whyChain))}</label>
+      <div class="row"><input id="whyAnswer" class="grow" autocomplete="off" placeholder="떠오르는 대로 답해 보세요"><button type="submit">답하기</button></div>
+    </form>` : '<p class="sm" style="margin-top:8px">다섯 번 파고들었어요. 마지막 답을 의견 카드로 옮겨 보세요.</p>'}
     ${ui.whyChain.length ? '<button type="button" class="btn-link" id="resetWhy">처음부터 다시</button>' : ''}
   </section>`}`;
 
@@ -90,7 +104,10 @@ export function popView() {
   on('[data-delete]', 'click', e => save({ [`cards.${e.currentTarget.dataset.delete}`]: null }));
 
   // 질문 도구
-  $('#nextHint') && ($('#nextHint').onclick = () => { ui.hintIndex++; saveUi(); rerender(); });
+  $('#nextHint') && ($('#nextHint').onclick = () => {
+    ui.hintIndex++; saveUi(); rerender();
+    $('#seasoningQuestion')?.classList.add('popped');
+  });
   $('#whyForm') && ($('#whyForm').onsubmit = e => {
     e.preventDefault();
     const answer = $('#whyAnswer').value.trim();

@@ -156,3 +156,23 @@ th { font-size: 12.5px; color: var(--sub); font-weight: 600; }
   select { border: 0; appearance: none; padding: 0; }
 }
 .logo img { display: block; margin-top: -3px; }
+
+/* POP 도구: 시즈닝은 브랜딩이라 버터색으로 강조한다 */
+.card.seasoning { background: var(--butter-soft); border-color: var(--butter); }
+.seasoning-head { display: flex; align-items: center; gap: 8px; }
+.seasoning-head h3 { margin: 0; font-size: 17px; font-weight: 800; }
+.shaker { color: var(--ink); fill: var(--butter-ink); flex: none; }
+.seasoning-tag { margin-left: auto; font-size: 12px; font-weight: 600; color: var(--butter-ink); }
+.seasoning-question { font-size: 18px; font-weight: 700; line-height: 1.5; margin: 12px 0 14px; color: var(--ink); }
+.seasoning-question.popped { animation: pop .32s ease-out; }
+@keyframes pop { 0% { transform: scale(.96); opacity: .4; } 60% { transform: scale(1.02); opacity: 1; } 100% { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .seasoning-question.popped { animation: none; } }
+.card.seasoning #nextHint { background: #fff; border-color: var(--butter); font-weight: 700; }
+
+.dig h3 { margin: 0; }
+.dig-steps { display: inline-flex; gap: 4px; }
+.dig-steps i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
+.dig-steps i.on { background: var(--ink); }
+.dig-chain { margin: 12px 0 0; padding-left: 20px; font-size: 14px; }
+.dig-chain li { margin-bottom: 8px; }
+.dig-question { display: block; font-size: 15px; font-weight: 700; color: var(--ink); margin: 12px 0 8px; }
